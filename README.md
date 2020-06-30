@@ -24,6 +24,5 @@ Repository for developing the Dash implementation of our COVID-19 Community Vuln
 - Users can choose multiple indicators to visualize at the same time
 - Users can find their current location and display score information
 - Integrate all features described above into a single Dash dashboard instance that can be hosted elsewhere
- 
 
-
+# Possible next steps
