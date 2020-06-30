@@ -38,7 +38,12 @@ colors = {'Severe COVID Case Complications': ['#fdc1f6', '#ff385e'], 'covid_case
 '% Adults with Diabetes':['#bdb4fe', '#0d0c54'],
 '% 65 and over':['#bdb4fe', '#0d0c54'] }
 
-
+index_range = {'Severe COVID Case Complications': (35, 65), 'covid_cases': (1, 500), 'Years of Potential Life Lost Rate': (5146, 11159),
+'% Fair or Poor Health': (13.4, 22.6),
+'% Smokers': (14.1, 21),
+'% Adults with Obesity': (28, 38),
+'% Adults with Diabetes':(8.2, 16),
+'% 65 and over':(14.5, 23)}
 
 
 
@@ -84,23 +89,23 @@ def update_map(chosen_state, chosen_indicator):
 	if chosen_state == "United States":
 		fig =  px.choropleth_mapbox(data, geojson=counties, locations=data.FIPS, color=chosen_indicator,
                            color_continuous_scale=colors[chosen_indicator],
-                           #range_color=(min(data[chosen_indicator]), max(data[chosen_indicator])),
+                           range_color=index_range[chosen_indicator],
                            mapbox_style="carto-positron",
                            zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
                            opacity=0.8,
-                           labels={chosen_indicator}, hover_data= indicators_lst
+                           labels={chosen_indicator}, hover_data= ['County', 'State'] + indicators_lst
                           )
 		fig.update_layout(title_text = chosen_indicator, margin={"r":0,"t":0,"l":0,"b":0})
 	else: 
 		dff = data[data['State'] == chosen_state]
 		fig = px.choropleth_mapbox(dff, geojson=counties, locations=dff.FIPS, color=chosen_indicator,
                            color_continuous_scale=colors[chosen_indicator],
-                           #range_color=(min(dff[chosen_indicator]), max(dff[chosen_indicator])),
+                           range_color=index_range[chosen_indicator],
                            mapbox_style="carto-positron",
                            zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
                            opacity=0.8,
                            labels={chosen_indicator},
-							hover_data = indicators_lst)
+							hover_data = ['County', 'State'] + indicators_lst)
 		fig.update_layout(
 		title_text = chosen_indicator,
 	   	margin={"r":0,"t":0,"l":0,"b":20})
