@@ -46,46 +46,30 @@ index_range = {'Severe COVID Case Complications': (35, 65), 'covid_cases': (1, 5
 '% Adults with Diabetes':(8.2, 16),
 '% 65 and over':(14.5, 23)}
 
-fig1 = go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS, z=data['Severe COVID Case Complications'],
-                           colorscale='Reds',
+
+fig1 = px.choropleth_mapbox(data, geojson=counties, locations=data.FIPS, color='Severe COVID Case Complications',
+                           color_continuous_scale='Reds',
+                           range_color=(0,100),
+                           mapbox_style="carto-positron",
+                           zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
+                           opacity=0.8,
+                           labels={'score'}, hover_data= ['County', 'State']#, visible = True 
+                          )
+
+fig1.update_layout(coloraxis_showscale=False, title_text = 'score',
+  	   	margin={"r":0,"t":0,"l":0,"b":20})
+
+fig1.add_trace(go.Choroplethmapbox(geojson=counties, locations=data.FIPS, z=data['covid_cases'],
+                           colorscale='Blues',
                            zmin=0,
                            zmax=100,
-                           marker_line_width=0, marker_opacity=0.8, text=indicators_lst))#, coloraxis_showscale= False)
+                           marker_line_width=0.1, marker_opacity=0.8, text=indicators_lst, showscale=False))#, hoverinfo='all'))#, coloraxis_showscale= False)
 
 
-fig1.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129},coloraxis_showscale=False)
+fig1.update_layout(coloraxis_showscale=False, title_text = 'cases',
+ 	   	margin={"r":0,"t":0,"l":0,"b":20})
 
 
-fig1.add_trace(go.Choroplethmapbox(
-        geojson = counties,
-        locations = data.FIPS, #fpis
-        z = data['covid_cases'].tolist(),
-        zmin = 0, zmax=500, #turn column into list 
-        colorscale = colors['covid_cases'], #range of color
-        text = 'covid_cases', 
-        #colorbar = dict(thickness=20, ticklen=3),
-        marker_line_width=0, marker_opacity=0.8
-        ))
-
-#fig1.update_layout(coloraxis_showscale=False)
-
-# fig1.update_layout(
-#  		title_text = 'scores',
-#  	   	margin={"r":0,"t":0,"l":0,"b":20})
-
-# fig2 = px.choropleth_mapbox(data, geojson=counties, locations=data.FIPS, color='covid_cases',
-#                            color_continuous_scale='Reds',
-#                            range_color=(0,500),
-#                            mapbox_style="carto-positron",
-#                            zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
-#                            opacity=0.8,
-#                            labels={'cases'},
-# 							hover_data = ['County', 'State'] )
-# fig2.update_layout(
-# 		title_text = 'cases',
-# 	   	margin={"r":0,"t":0,"l":0,"b":20})
-
-# fig = [fig1, fig2]
 
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -118,9 +102,6 @@ app.layout = html.Div([
     style={'width': '48%', 'display': 'inline-block'})]),
 
     dcc.Graph(id='counties-map', figure=fig1) #figure= fig),#WHERE THE MAP WOULD BE
-    
-
-
 
 
 	])
