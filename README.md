@@ -4,14 +4,12 @@ Repository for developing the Dash implementation of our COVID-19 Community Vuln
 
 # Updates:
 **Visual components:**
-
 - Choropleth map of 3 primary scores (COVID severity, economic harm, and mobile health)
 - Choropleth maps of all underlying variables in the base dataset (listed here)
 - Bar graph of 10 counties with highest COVID case counts
+- Select which scores and/or underlying variables they want the map to display
 
 **Users can :**
-
-- Select which scores and/or underlying variables they want the map to display
 - Adjust display area of the map
 - Hover over a county on the map to see key statistics (county and state name, scores)
 - Select a specific state and/or county (zoom to the location and display information)
