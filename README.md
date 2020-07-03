@@ -13,13 +13,13 @@ Repository for developing the Dash implementation of our COVID-19 Community Vuln
 - Adjust display area of the map
 - Hover over a county on the map to see key statistics (county and state name, scores)
 - Select a specific state and/or county (zoom to the location and display information)
+- Choose multiple indicators to visualize at the same time
 
 # Next steps:
 - Legends for all choropleth maps
 - List of highest scoring counties for each metric (can be a single list widget where you select which score to show)
 - Side bar prominently displaying brief descriptions of each scores (including variables used to construct them) and instructions on how to use the dashboard)
 - Users can see demographic information of a county on the hoverboard
-- Users can choose multiple indicators to visualize at the same time
 - Users can find their current location and display score information
 - Integrate all features described above into a single Dash dashboard instance that can be hosted elsewhere
 - Host on a website
