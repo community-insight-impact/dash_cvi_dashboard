@@ -13,6 +13,7 @@ from dash.dependencies import Input, Output
 
 
 data = pd.read_csv("../../../Downloads/covid_community_vulnerability-master/data/severe_cases_score_data.csv", dtype={'FIPS': str})
+data_str = data.applymap(str)
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 indicators_lst = ['Severe COVID Case Complications',
@@ -46,50 +47,12 @@ index_range = {'Severe COVID Case Complications': (35, 65), 'covid_cases': (1, 5
 '% Adults with Diabetes':(8.2, 16),
 '% 65 and over':(14.5, 23)}
 
-# fig1 = px.choropleth_mapbox(data, geojson=counties, locations=data.FIPS, color='Severe COVID Case Complications',
-#                            color_continuous_scale='Reds',
-#                            range_color=(0,100),
-#                            mapbox_style="carto-positron",
-#                            zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
-#                            opacity=0.8,
-#                            labels={'score'}, hover_data= ['County', 'State']#, visible = True 
-#                           )
+hovertemplate='z1:%{customdata[0]} <br><b>z2:%{z:.3f}</b><br>z3: %{customdata[1]:.3f} '
 
-
-# fig1.add_trace(go.Choroplethmapbox(
-#         geojson = counties,
-#         locations = data.FIPS, #fpis
-#         z = data['covid_cases'].tolist(),
-#         zmin = 0, zmax=500, #turn column into list 
-#         colorscale = colors['covid_cases'], #range of color
-#         text = 'covid_cases', 
-#         colorbar = dict(thickness=20, ticklen=3),
-#         marker_line_width=0, marker_opacity=0.8,
-#         ))
-
-
-# fig1.update_layout(
-#  		title_text = 'scores',
-#  	   	margin={"r":0,"t":0,"l":0,"b":20})
-
-# fig2 = px.choropleth_mapbox(data, geojson=counties, locations=data.FIPS, color='covid_cases',
-#                            color_continuous_scale='Reds',
-#                            range_color=(0,500),
-#                            mapbox_style="carto-positron",
-#                            zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
-#                            opacity=0.8,
-#                            labels={'cases'},
-# 							hover_data = ['County', 'State'] )
-# fig2.update_layout(
-# 		title_text = 'cases',
-# 	   	margin={"r":0,"t":0,"l":0,"b":20})
-
-
-data_lst = ['State'] + indicators_lst
-# data['all_data'] = data['County']
-# for indx in data_lst:
-# 	data['all_data'] += data[indx]
-#data['all_data'] = data[data_lst]
+data_lst = ['County', 'State'] + indicators_lst
+data['all_data'] =  data['FIPS'] + "<br>" + "County= " + data['County'] + "<br>" + "State= " + data['State']
+for indicator in indicators_lst:
+	data['all_data'] = data['all_data'] + "<br>" + indicator +"= " + data_str[indicator]
 
 
 
@@ -128,9 +91,6 @@ app.layout = html.Div([
    	style= {'height': '90%'}) #figure= fig),#WHERE THE MAP WOULD BE
     
 
-
-	#html.Div([id='intermediate-value', style={'display': 'none'}])
-
 	])
 
 @app.callback(
@@ -160,18 +120,19 @@ def update_map(chosen_state, chosen_indicator):
 			if len(chosen_indicator) > 1:
 				for val_indx in range(1, len(chosen_indicator)):
 
-					fig.add_trace(go.Choroplethmapbox(geojson=counties, locations=data.FIPS, z=data[chosen_indicator[val_indx]],
+					fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=counties, locations=data.FIPS, z=data[chosen_indicator[val_indx]],
 						colorscale=colors[chosen_indicator[val_indx]],
 						zmin=index_range[chosen_indicator[val_indx]][0],
 						zmax=index_range[chosen_indicator[val_indx]][1],
-						marker_line_width=0.1, marker_opacity=0.8, showscale=False, text= data[data_lst] ))#, hovertext=[data[y] for y in indicators_lst]))
+						marker_line_width=0.1, marker_opacity=0.8, showscale=False, #hovertemplate =  "FIPS=%{data.FIPS}<br>County=%%{data.County}<br>State=%%{data.State}<extra></extra>"))
+						 text= data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))#, hovertemplate= data_lst ))#, hovertext=[data[y] for y in indicators_lst]))
 						#hovertemplate=[County: %{data['County']}, State:%{data['State']}] + [y: %{data[y]} for y in indicators_lst]))
 					fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
 					#fig.update_layout(hover_data= ['County', 'State'] + indicators_lst)
 		else:
 		 	fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
 		 	fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False)
-					#fig.add_trace(px.choropleth_mapbox(data, 
+		#fig.update_trace(hover_data= ['County', 'State'] + indicators_lst)
 		#geojson=counties, locations=data.FIPS, hover_data= ['County', 'State'] + indicators_lst))
 		return fig
 	else:
@@ -201,7 +162,6 @@ def update_map(chosen_state, chosen_indicator):
 				fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
 				fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False)
 
-	
 		return fig 
 
 
