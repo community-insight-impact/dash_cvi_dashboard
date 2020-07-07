@@ -108,7 +108,7 @@ app.layout = html.Div([
    			children= html.Div(id='colorscale-list' , children=[],
    				#[html.Img(id='color-scale', src='https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%20Adults%20with%20Obesity.png'),
    			#html.Img(id='color-scale2', src='https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%20Smokers.png')],
-   			style={'label':'no legend','width':200, 'height':400, 'overflowY': 'scroll', 'border': '10px solid gray', 'margin': 10}),
+   			style={'label':'no legend','width':200, 'height':400, 'overflowY': 'scroll', 'border': '10px solid gray', 'margin': 10, 'display':'inline-block'}),
    			style= {'width': "15%", 'display':'inline-block'}
 
 
