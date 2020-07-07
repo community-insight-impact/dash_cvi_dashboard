@@ -10,6 +10,12 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import flask
+import glob
+import os
+
+picture_dir="/pictures"
+#list_of_images = [os.path.basename(x) for x in glob.glob('{}*.png'.format(image_directory))]
 
 
 data = pd.read_csv("../../../Downloads/covid_community_vulnerability-master/data/severe_cases_score_data.csv", dtype={'FIPS': str})
@@ -47,13 +53,20 @@ index_range = {'Severe COVID Case Complications': (35, 65), 'covid_cases': (1, 5
 '% Adults with Diabetes':(8.2, 16),
 '% 65 and over':(14.5, 23)}
 
-hovertemplate='z1:%{customdata[0]} <br><b>z2:%{z:.3f}</b><br>z3: %{customdata[1]:.3f} '
+color_scales= {'Severe COVID Case Complications': 'https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/Severe%20COVID%20Case%20Complications.png', 
+'covid_cases': 'https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/covid_cases.png', 
+'Years of Potential Life Lost Rate': 'https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/Years%20of%20Potential%20Life%20Lost%20Rate.png',
+'% Fair or Poor Health': 'https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%20Fair%20or%20Poor%20Health.png',
+'% Smokers': 'https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%20Smokers.png',
+'% Adults with Obesity': 'https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%20Adults%20with%20Obesity.png',
+'% Adults with Diabetes':'https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%20Adults%20with%20Diabetes.png',
+'% 65 and over':'https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%2065%20and%20Over.png'}
+
 
 data_lst = ['County', 'State'] + indicators_lst
-data['all_data'] =  data['FIPS'] + "<br>" + "County= " + data['County'] + "<br>" + "State= " + data['State']
+data['all_data'] =  data['FIPS'] + "<br>" + "County= " + data['County'] + "<br>" + "State= " + data['State'] 
 for indicator in indicators_lst:
 	data['all_data'] = data['all_data'] + "<br>" + indicator +"= " + data_str[indicator]
-
 
 
 empty_fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
@@ -74,7 +87,7 @@ app.layout = html.Div([
 				value= 'United States'
 )
 ],
-	style={'width': '48%', 'display': 'inline-block'}),
+	style={'width': '50%', 'display': 'inline-block'}),
 
 	html.Div([
 		html.Label('Indicator'),
@@ -85,13 +98,25 @@ app.layout = html.Div([
             multi = True
             )
     ],
-    style={'width': '48%', 'display': 'inline-block'})]),
+    style={'width': '50%', 'display': 'inline-block'})]),
 
-   html.Div([ dcc.Graph(id='counties-map' ,figure=empty_fig)],
-   	style= {'height': '90%'}) #figure= fig),#WHERE THE MAP WOULD BE
-    
+	
+   	html.Div([
+	  	dcc.Graph(id='counties-map' , figure=empty_fig)],
+   				style= {'width': "85%", 'display':'inline-block'}),
+   	html.Div(id = 'container',
+   			children= html.Div(id='colorscale-list' , children=[],
+   				#[html.Img(id='color-scale', src='https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%20Adults%20with%20Obesity.png'),
+   			#html.Img(id='color-scale2', src='https://raw.githubusercontent.com/community-insight-impact/dash_cvi_dashboard/master/Color%20Scale%20for%20Map/%25%20Smokers.png')],
+   			style={'label':'no legend','width':200, 'height':400, 'overflowY': 'scroll', 'border': '10px solid gray', 'margin': 10}),
+   			style= {'width': "15%", 'display':'inline-block'}
 
-	])
+
+   			)] #figure= fig),#WHERE THE MAP WOULD BE
+	#html.Div(])[id='intermediate-value', style={'display': 'none'}])
+
+	)
+	
 
 @app.callback(
 	Output('counties-map', 'figure'),
@@ -125,7 +150,7 @@ def update_map(chosen_state, chosen_indicator):
 						zmin=index_range[chosen_indicator[val_indx]][0],
 						zmax=index_range[chosen_indicator[val_indx]][1],
 						marker_line_width=0.1, marker_opacity=0.8, showscale=False, #hovertemplate =  "FIPS=%{data.FIPS}<br>County=%%{data.County}<br>State=%%{data.State}<extra></extra>"))
-						 text= data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))#, hovertemplate= data_lst ))#, hovertext=[data[y] for y in indicators_lst]))
+						text= data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))#, hovertemplate= data_lst ))#, hovertext=[data[y] for y in indicators_lst]))
 						#hovertemplate=[County: %{data['County']}, State:%{data['State']}] + [y: %{data[y]} for y in indicators_lst]))
 					fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
 					#fig.update_layout(hover_data= ['County', 'State'] + indicators_lst)
@@ -156,14 +181,25 @@ def update_map(chosen_state, chosen_indicator):
 					colorscale=colors[chosen_indicator[val_indx]],
 					zmin=index_range[chosen_indicator[val_indx]][0],
 					zmax=index_range[chosen_indicator[val_indx]][1],
-					marker_line_width=0.1, marker_opacity=0.8, showscale=False))
+					marker_line_width=0.1, marker_opacity=0.8, showscale=False, text= dff['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))
 					#fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[val_indx], margin={"r":0,"t":0,"l":0,"b":0})
 			else:
 				fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
 				fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False)
-
 		return fig 
 
+
+
+@app.callback(
+	Output('container', 'children'),
+	[Input('choose-indicator','value')])
+
+def update_color_scale(chosen_indicators):
+	all_scales = []
+	if len(chosen_indicators) != 0:
+		for indicator in chosen_indicators:
+			all_scales.append(html.Img(src=color_scales[indicator]))
+		return html.Div(children=all_scales, style= {'label':'Legends','width':200, 'height':400, 'overflowY': 'scroll', 'border': '10px solid gray', 'margin': 10})
 
 
 if __name__ == '__main__':
