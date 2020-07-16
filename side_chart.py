@@ -3,6 +3,8 @@ import dash_html_components as html
 import pandas as pd
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
+import json
+
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/font-awesome.min.css', {
     'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css',
@@ -12,6 +14,8 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/f
 }]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+#help(type(app))
+
 colors = {
     'header': 'c0c0c0',
     'text': '#7FDBFF',
@@ -64,40 +68,42 @@ for i in range(3):
 
     #print(top_25)
 
-#print(full_datasets50[criteria[0]])
-#print(full_datasets50[criteria[1]])
-#print(full_datasets50[criteria[2]])
+print(full_datasets50[criteria[0]])
+# print(full_datasets50[criteria[1]])
+# print(full_datasets50[criteria[2]])
 #print(type(full_datasets50[criteria[0]][full_datasets50[criteria[0]]['County']=='Putnam']['Severe COVID Case Complications']))
-
+print(len(full_datasets50[criteria[0]].index))
+print(full_datasets50[criteria[0]].iloc[0])
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(children=[
     dcc.Store(id= 'index-score', data=[0,1,2]),
-    dcc.Store(id= 'index-county', data = 1),
+    dcc.Store(id= 'index-county', data = 0),
     html.Div([
         html.I(id='prev-county', className="fa fa-caret-left", **{'aria-hidden': 'true'}, style = {'display':'inline-block', 'font-size': '20px', 'margin-right': '10px'}),
         html.P(id= 'count-county' ,#children='1 of 50',
          style= {'display':'inline-block'}),
         html.I(id='next-county', className= "fa fa-caret-right", **{'aria-hidden': 'true'}, style={'display':'inline-block', 'font-size': '20px', 'margin-left': '10px'})
-        ], style= {'text-align': 'center'}),
+        ], style= {'text-align': 'center', 'position':'static'}),
     html.Div(id= "chart_num", children =[]
         #html.H4(children='County Score: Severe COVID Case Complications'),
         #generate_table(full_datasets25[criteria[0]])
-        ),
-    html.Div(id= "choose_score", children = [
-        html.I(id='prev-score', className="fa fa-caret-left", **{'aria-hidden': 'true'}, style = {'display':'inline-block', 'font-size': '20px','margin-right': '10px'}),
+        , style = {'position':'static'}),
+    html.Span(id= "choose_score", children = [
+        html.I(id='prev-score', className="fa fa-caret-left", **{'aria-hidden': 'true'}, style = {'display':'inline-block', 'font-size': '20px','margin-right': '10px', 'position':'relative'}),
         html.Div(html.P(id= 'count-score', #children='Severe COVID Case Complications',
-         style= {'display':'inline-block', 'font-size': '12px', 'text-align':'center'})), 
-        html.I(id='next-score', className="fa fa-caret-right", **{'aria-hidden': 'true'}, style={'display':'inline-block', 'font-size': '20px', 'margin-left': '10px'})
-        ],style={'display':'flex'})
+         style= {'display':'inline-block', 'font-size': '10px', 'text-align':'center', 'position':'static', 'overflow': 'hidden'}), style = {'width': 100}), 
+       html.I(id='next-score', className="fa fa-caret-right", **{'aria-hidden': 'true'}, style={'display':'inline-block', 'font-size': '20px', 'position':'relative',# 'margin-left': '10px',
+           })
+        ],style={'display':'flex', 'position':'absolute', 'bottom': 0, 'right': 50})
 ],
     style = {
             #'label':'no legend',
-            'width':200, 'height':360, 
+            'width':200, 'height':320, 'maxHeight':400, 
             #'overflowY': 'scroll', 
             'border': '10px solid gray', 'margin': 10, 
-            'display': 'inline-block', 'position':'relative', 'padding':10
+            'display': 'inline-block', 'position':'absolute', 'padding':10
             })
 
 @app.callback(
@@ -135,13 +141,14 @@ def click_county(prev, next, num):
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
         if button_id == 'prev-county':
-            if num == 1:
-                num = 50
+            if num == 0:
+                num = 49
             else:
                 num = num -1
+            #return num
         if button_id == 'next-county':
-            if num == 50:
-                num = 1
+            if num == 49:
+                num = 0
             else:
                 num = num +1
         return num#, '{} of 50'.format(num)        
@@ -161,12 +168,11 @@ def chart_display(county_i, score_i):
     df = full_datasets50[score]
     
     return [
-        html.H4(children=score, style={'text-align':'center', 'margin-bottom':20}),
-        html.H4('County Score',style={'text-align':'center', 'font-size': 20, 'margin-bottom': 5}),
+        html.Div(html.H4(children=score, style={'text-align':'center','font-size':20, 'margin-bottom':20, 'position':'static', 'textOverflow':'ellipsis', 'overflow':'hidden'})),
+        html.H4('County Score',style={'text-align':'center', 'font-size': 20, 'margin-bottom': 5, 'position':'static'}),
         html.H4(str(round(df.iloc[cty_indx][score],2)), style= { 'font-weight': 'bold', 'text-align':'center', 'margin-bottom': 5}),
-        html.H5(children= str(df.iloc[cty_indx]['County'] + ", " + df.iloc[cty_indx]['State']), style = {'text-align':'center', 'text-size': 10, 'margin-bottom': 40 })
-        ], criteria[score_indx], ' {} of 50 '.format(cty_indx)
-
+        html.H5(children= str(df.iloc[cty_indx]['County'] + ", " + df.iloc[cty_indx]['State']), style = {'text-align':'center', 'font-size': 20, 'position':'static'})#'margin-bottom': 50,
+        ], criteria[score_indx], ' {} of 50 '.format(cty_indx + 1)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
