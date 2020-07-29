@@ -27,14 +27,19 @@ data_str = data.applymap(str)
 data2 = pd.read_csv("../economic_score_data.csv", dtype={'FIPS': str})
 data3 = pd.read_csv("../mobile_health_score_data.csv", dtype={'FIPS': str})
 
-side_data = data.merge(data2, how='outer').merge(data3, how='outer')
+
+
+
+full_data = data.merge(data2, how='outer').merge(data3, how='outer')
+
+full_data_str = full_data.applymap(str)
 #print(side_data.head(5))
 criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', 'Need for Mobile Health Resources']
 full_datasets50 = {}
 
 #merged.drop(columns=dropped)
 for i in range(3):
-    merged_f=side_data[['County','State', criteria[i]]]
+    merged_f=full_data[['County','State', criteria[i]]]
     sorted_cases = merged_f.sort_values(by=[criteria[i]], ascending= False)
     top_50 = sorted_cases.head(50)
     #top_50 = sorted_cases.head(50)
@@ -49,10 +54,24 @@ indicators_lst = ['Severe COVID Case Complications',
 '% Smokers',
 '% Adults with Obesity',
 '% Adults with Diabetes',
-'% 65 and over']
+'% 65 and over',
+'% Uninsured',
+'% Children in Poverty',
+'Income Ratio',
+'% Single-Parent Households',
+'% Fair or Poor Health',
+]
 
+# '% Children in Poverty', 'value': '% Children in Poverty'},
+#         {'label': 'Income Ratio', 'value': 'Income Ratio'},
+#         {'label': '% Single-Parent Households', 'value': '% Single-Parent Households'},
+#         {'label': '% Severe Housing Cost Burden', 'value': '% Fair or Poor Health'},
+#         {'label': '% Severe Housing Problems', 'value': '% Severe Housing Problems'},
+#         {'label': '% Enrolled in Free or Reduced Lunch', 'value': '% Enrolled in Free or Reduced Lunch'},
+#         {'label': '% Unemployed', 'value': '% Unemployed'},
+#         {'label': 'High School Graduation Rate', 'value': 'High School Graduation Rate'}]
 
-all_states = list(data.State.unique())
+all_states = list(full_data.State.unique())
 all_states.insert(0, "United States")
 
 all_counties = []
@@ -62,6 +81,8 @@ for each_i in range(big_i):
     all_counties.append(cty)
 #print(all_counties)
 
+data['County + State'] = all_counties
+print(data['County + State'])
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -118,11 +139,72 @@ top_10 = top_10data.applymap(str)
 #print(top_10)
 
 
+#hovertemplate='z1:%{customdata[0]} <br><b>z2:%{z:.3f}</b><br>z3: %{customdata[1]:.3f} '
+
+# fig1 = px.choropleth_mapbox(data, geojson=counties, locations=data.FIPS, color='Severe COVID Case Complications',
+#                            color_continuous_scale='Reds',
+#                            range_color=(0,100),
+#                            mapbox_style="carto-positron",
+#                            zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
+#                            opacity=0.8,
+#                            labels={'score'}, hover_data= ['County', 'State']#, visible = True 
+#                           )
+
+
+# fig1.add_trace(go.Choroplethmapbox(
+#         geojson = counties,
+#         locations = data.FIPS, #fpis
+#         z = data['covid_cases'].tolist(),
+#         zmin = 0, zmax=500, #turn column into list 
+#         colorscale = colors['covid_cases'], #range of color
+#         text = 'covid_cases', 
+#         colorbar = dict(thickness=20, ticklen=3),
+#         marker_line_width=0, marker_opacity=0.8,
+#         ))
+
+
+# fig1.update_layout(
+#  		title_text = 'scores',
+#  	   	margin={"r":0,"t":0,"l":0,"b":20})
+
+# fig2 = px.choropleth_mapbox(data, geojson=counties, locations=data.FIPS, color='covid_cases',
+#                            color_continuous_scale='Reds',
+#                            range_color=(0,500),
+#                            mapbox_style="carto-positron",
+#                            zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
+#                            opacity=0.8,
+#                            labels={'cases'},
+# 							hover_data = ['County', 'State'] )
+# fig2.update_layout(
+# 		title_text = 'cases',
+# 	   	margin={"r":0,"t":0,"l":0,"b":20})
+
+# fig = [fig1, fig2]
+
+dff2 = pd.DataFrame(columns=full_data.columns)
+cty_df = data[data['County + State'] == 'Bibb, Alabama']
+dff2 = pd.concat([dff2, cty_df], join='outer')
+print(dff2)
+
+
 data_lst = ['County', 'State'] + indicators_lst
-data['all_data'] =  data['FIPS'] + "<br>" + "County= " + data['County'] + "<br>" + "State= " + data['State'] #+'<br>' + data['Severe COVID Case Complications']+'<br>' + data['covid_cases']
+data['all_data'] =  full_data['FIPS'] + "<br>" + "County= " + data['County'] + "<br>" + "State= " + data['State'] #+'<br>' + data['Severe COVID Case Complications']+'<br>' + data['covid_cases']
+# 'covid_cases',
+# 'Years of Potential Life Lost Rate',
+# '% Fair or Poor Health',
+# '% Smokers',
+# '% Adults with Obesity',
+# '% Adults with Diabetes',
+# '% 65 and over']
+
 
 for indicator in indicators_lst:
 	data['all_data'] = data['all_data'] + "<br>" + indicator +"= " + data_str[indicator]
+#+ indicators_lst
+# data['all_data'] = data['County']
+# for indx in data_lst:
+#   	data['all_data'] += "<br><b>"+ data[indx]+ "</b>"
+# # #data['all_data'] = data[data_lst]
 
 top_10["covid"] = top_10.loc[:,'FIPS'] + "<br>" + "County= " + top_10.loc[:,'County'] + "<br>" + "State= " + top_10.loc[:, 'State'] + "<br>"+ "Number of Covid cases=" + top_10.loc[:, 'covid_cases']
 #hovertemplate =  "FIPS=%{data.FIPS}<br>County=%%{data.County}<br>State=%%{data.State}<extra></extra>"
@@ -137,6 +219,15 @@ empty_fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS)
 empty_fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False, margin={"r":0,"t":0,"l":0,"b":0}, height=None)
 
 
+# ['Severe COVID Case Complications',
+# 'covid_cases',
+# 'Years of Potential Life Lost Rate',
+# '% Fair or Poor Health',
+# '% Smokers',
+# '% Adults with Obesity',
+# '% Adults with Diabetes',
+# '% 65 and over']
+
 all_indicators = {'Number of COVID cases': 'covid_cases', '% 65 and older': '% 65 and over', 
 '% Adults with Obesity': '% Adults with Obesity', '% Adults with Diabetes': '% Adults with Diabetes',
 '% Smokers': '% Smokers', }
@@ -144,48 +235,77 @@ all_indicators = {'Number of COVID cases': 'covid_cases', '% 65 and older': '% 6
 item0 = html.Div([
 	html.P('Describes likelihood that constituents within a community will develop severe complications following covid-19 infection', style = {'margin-bottom': 20}),
 	html.P('Includes:'),
-	html.Div([html.I(id='covid_cases 1', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " " ,html.P('Number of COVID cases', style={'display':'inline-block'})]),
-	html.Div([html.I(id = '% 65 and over 1',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('% 65 and older', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Adults with Obesity 1', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('% Adults with Obesity', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Adults with Diabetes 1',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Adults with Diabetes', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Smokers 1', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Smokers', style={'display':'inline-block'})]),
-	html.Div([html.I(id= 'Years of Potential Life Lost Rate 1',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('Years of Potential Life Lost Rate', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Fair or Poor Health 1', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Fair or Poor Health', style={'display':'inline-block'})])
+	dcc.Checklist(id="severe-indicators", options=[ {'label': 'Number of COVID cases', 'value': 'covid_cases'},
+        {'label': '% 65 and over', 'value': '% 65 and over'},
+        {'label': '% Adults with Obesity', 'value': '% Adults with Obesity'},
+        {'label': '% Adults with Diabetes', 'value': '% Adults with Diabetes'},
+        {'label': '% Smokers', 'value': '% Smokers'},
+        {'label': 'Years of Potential Life Lost Rate', 'value': 'Years of Potential Life Lost Rate'},
+        {'label': '% Fair or Poor Health', 'value': '% Fair or Poor Health'}], value=[], inputClassName= "fa fa-square-o")
+    # html.Div([html.I(id='covid_cases', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " " ,html.P('Number of COVID cases', style={'display':'inline-block'})]),
+	# html.Div([html.I(id = '% 65 and over',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('% 65 and older', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Adults with Obesity', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('% Adults with Obesity', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Adults with Diabetes',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Adults with Diabetes', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Smokers', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Smokers', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= 'Years of Potential Life Lost Rate',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('Years of Potential Life Lost Rate', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Fair or Poor Health', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Fair or Poor Health', style={'display':'inline-block'})])
         ]#, style={'display': 'grid'}
         )
 
 item1 = html.Div([
 	html.P('Describes existing need for food-based community efforts, services, and nonprofits', style={'margin-bottom': 20}),
 	html.P('Includes:'),
-	html.Div([html.I(id= '% Smokers 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Smokers', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Children in Poverty', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Children in Poverty', style={'display':'inline-block'})]),
-	html.Div([html.I(id= 'Income Ratio', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('Income Ratio', style={'display':'inline-block'})]),
-    #html.P('Income Ratio'),
-	html.Div([html.I(id= '% Single-Parent Households', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Single-Parent Households', style={'display':'inline-block'})]),
-    #html.P('% Single-Parent Households'),
-	html.Div([html.I(id= '% Severe Housing Problems', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Severe Housing Problems', style={'display':'inline-block'})]),
-    #html.P('% Severe Housing Problems'),
-    html.Div([html.I(id= '% Enrolled in Free or Reduced Lunch', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Enrolled in Free or Reduced Lunch', style={'display':'inline-block'})]),
-	#html.P('% Enrolled in Free or Reduced Lunch'),
-	html.Div([html.I(id= '% Uninsured 1', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Uninsured', style={'display':'inline-block'})]),
-	html.Div([html.I(id= 'covid_cases 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('Number of Covid Cases', style={'display':'inline-block'})]),
-    #html.P('Number of Covid Cases'),
-	html.Div([html.I(id= '% Severe Housing Cost Burden', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Severe Housing Cost Burden', style={'display':'inline-block'})])
+	dcc.Checklist(id="economic-indicators", options=[ #{'label': 'Number of COVID cases', 'value': 'covid_cases'},
+        #{'label': 'Risk of Severe Economic Harm', 'value': 'Risk of Severe Economic Harm'},
+        {'label': '% Uninsured', 'value': '% Uninsured'},
+        {'label': '% Children in Poverty', 'value': '% Children in Poverty'},
+        {'label': 'Income Ratio', 'value': 'Income Ratio'},
+        {'label': '% Single-Parent Households', 'value': '% Single-Parent Households'},
+        {'label': '% Severe Housing Cost Burden', 'value': '% Fair or Poor Health'},
+        {'label': '% Severe Housing Problems', 'value': '% Severe Housing Problems'},
+        {'label': '% Enrolled in Free or Reduced Lunch', 'value': '% Enrolled in Free or Reduced Lunch'},
+        {'label': '% Unemployed', 'value': '% Unemployed'},
+        {'label': 'High School Graduation Rate', 'value': 'High School Graduation Rate'},
+        {'label': 'Number of Covid Cases', 'value': 'covid_cases'}], value=[], inputClassName= "fa fa-square-o")
+	# html.Div([html.I(id= '% Smokers 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Smokers', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Children in Poverty', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Children in Poverty', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= 'Income Ratio', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('Income Ratio', style={'display':'inline-block'})]),
+ #    #html.P('Income Ratio'),
+	# html.Div([html.I(id= '% Single-Parent Households', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Single-Parent Households', style={'display':'inline-block'})]),
+ #    #html.P('% Single-Parent Households'),
+	# html.Div([html.I(id= '% Severe Housing Problems', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Severe Housing Problems', style={'display':'inline-block'})]),
+ #    #html.P('% Severe Housing Problems'),
+ #    html.Div([html.I(id= '% Enrolled in Free or Reduced Lunch', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Enrolled in Free or Reduced Lunch', style={'display':'inline-block'})]),
+	# #html.P('% Enrolled in Free or Reduced Lunch'),
+	# html.Div([html.I(id= '% Uninsured', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Uninsured', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= 'covid_cases 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('Number of Covid Cases', style={'display':'inline-block'})]),
+ #    #html.P('Number of Covid Cases'),
+	# html.Div([html.I(id= '% Severe Housing Cost Burden', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Severe Housing Cost Burden', style={'display':'inline-block'})])
     #html.P('% Severe Housing Cost Burden')
 	])
 
 item2 = html.Div([
 	html.P('Describes the likelihood that a community could benefit from mobile health services', style={'margin-bottom': 20}),
     html.P('Includes:'),
-	html.Div([html.I(id= '% Smokers 3', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Smokers', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Uninsured 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Uninsured', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Adults with Obesity 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('% Adults with Obesity', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Adults with Diabetes 2',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Adults with Diabetes', style={'display':'inline-block'})]),
-	html.Div([html.I(id = '% 65 and over 2',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('% 65 and older', style={'display':'inline-block'})]),
-	html.Div([html.I(id = 'Primary Care Physicians Rate',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('Primary Care Physicians Rate', style={'display':'inline-block'})]),
-    #html.P('Primary Care Physicians Rate'),
-	html.Div([html.I(id= '% Fair or Poor Health 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Fair or Poor Health', style={'display':'inline-block'})]),
-	html.Div([html.I(id= '% Home Internet Access', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Home Internet Access', style={'display':'inline-block'})])
+    dcc.Checklist(id="mobile-indicators", options=[ #{'label': 'Number of COVID cases', 'value': 'covid_cases'},
+        #{'label': 'Risk of Severe Economic Harm', 'value': 'Risk of Severe Economic Harm'},
+        {'label': '% Uninsured', 'value': '% Uninsured'},
+        {'label': '% 65 and over', 'value': '% 65 and over'},
+        {'label': '% Adults with Obesity', 'value': '% Adults with Obesity'},
+        {'label': '% Adults with Diabetes', 'value': '% Adults with Diabetes'},
+        {'label': '% Smokers', 'value': '% Smokers'},
+        {'label': 'Primary Care Physicians Rate', 'value': 'Primary Care Physicians Rate'},
+        {'label': '% Fair or Poor Health', 'value': '% Fair or Poor Health'},
+        {'label': '% Home Internet Access', 'value': '% Home Internet Access'}], value=[], inputClassName= "fa fa-square-o")
+	# html.Div([html.I(id= '% Smokers 3', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Smokers', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Uninsured 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Uninsured', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Adults with Obesity 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('% Adults with Obesity', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Adults with Diabetes 2',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Adults with Diabetes', style={'display':'inline-block'})]),
+	# html.Div([html.I(id = '% 65 and over 2',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('% 65 and older', style={'display':'inline-block'})]),
+	# html.Div([html.I(id = 'Primary Care Physicians Rate',className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'}), " ", html.P('Primary Care Physicians Rate', style={'display':'inline-block'})]),
+ #    #html.P('Primary Care Physicians Rate'),
+	# html.Div([html.I(id= '% Fair or Poor Health 2', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Fair or Poor Health', style={'display':'inline-block'})]),
+	# html.Div([html.I(id= '% Home Internet Access', className="fa fa-square-o", **{'aria-hidden': 'true'}, style={'display':'inline-block'})," ", html.P('% Home Internet Access', style={'display':'inline-block'})])
     #html.P('% Home Internet Access')
 	])
 
@@ -199,22 +319,26 @@ def make_item(i):
         [
             dbc.CardHeader(
                 html.Div(
-                	children=[html.I(id= f"checkbox-{i}",
-                    	className="fa fa-square-o", #style = {'font-weight':'bold'}, 
-                    	#children= criteria[i],
-                    	 **{'aria-hidden': 'true'},
-                        #color="link",
-                        style={'fontSize':'15px', 'fontWeight':'bold', 'display': 'inline-block'},
-                    ), " ", html.H2(criteria[i], style={'font-size':'16px', 'display': 'inline-block', 'color': accordion_text_colors[i]}),
-                    html.I(id=f"score-{i}-toggle", className="fa fa-caret-right", **{'aria-hidden': 'true'}, style= {'font-size': '15px', 'display':'inline-block', 'position': 'static',
-                    	 'float':'right', 'marginTop':'20px'  #'right': 5  #'bottom': 5 #right':30, 'bottom': 0
-                    	 })],
-                    #style = {'height': '20px', 'text-align':'center'}#'display':'flex'}
+                	children=[
+                        dcc.Checklist(id= f"checkbox-{i}", options= [{'label': criteria[i], 'value': criteria[i]}], 
+                            inputStyle = {'display': 'inline-block', 'marginRight':'5px'},  labelStyle= {'marginBottom':'5px','fontSize':'14px', 'display': 'inline-block', 'color': accordion_text_colors[i]}, 
+                            value=[]),
+
+                    # [html.I(id= f"checkbox-{i}",
+                    # 	className="fa fa-square-o", #style = {'font-weight':'bold'}, 
+                    # 	#children= criteria[i],
+                    # 	 **{'aria-hidden': 'true'},
+                    #     #color="link",
+                    #     style={'fontSize':'15px', 'fontWeight':'bold', 'display': 'inline-block'},
+                    # ), " ", html.H2(criteria[i], style={'font-size':'16px', 'display': 'inline-block', 'color': accordion_text_colors[i]}),
+                        html.I(id=f"score-{i}-toggle", className="fa fa-caret-right", **{'aria-hidden': 'true'}, style= {'fontSize': '15px', 'display':'inline-block', 'position': 'relative', 'float':'right', 'marginTop':'-23px'  #'right': 5  #'bottom': 5 #right':30, 'bottom': 0
+                    	})],
+                    #style = {'height': '20px', 'text-align':'center'}#}
                 #style={'margin-top':'1px'}),
                   #style = {'height': '0px', 'text-align':'center'}
-     style= {'verticalAlign':'middle', 'margin':0}), 
+                  style= {'verticalAlign':'middle', }), 
      #),
-                style={'height':'30%'}),
+            style={'height':'30%'}),
             dbc.Collapse(
                 dbc.CardBody(graph_info[i]),
                 id=f"collapse-{i}",
@@ -228,7 +352,7 @@ accordion = html.Div([make_item(0), make_item(1), make_item(2)], className="acco
 accordion_box = html.Div([
 	html.Label('Select a Metric:', style={'verticalAlign':'middle', 'padding': 10}), 
 	html.Div(accordion, style = {'width': '100%', 'overflowY':'scroll'})], #style = {'width': '20%', 'overflowY':'scroll',}
-		style={'height':'400px', 'width':'22%', 'overflowY':'scroll', 'border': '5px solid gray', 'margin': 10})#,'overflowY':'hidden'})
+		style={'height':'400px', 'width':'100%', 'overflowY':'scroll', 'border': '5px solid gray', 'margin': 5})#,'overflowY':'hidden'})
 
 
 		#[dbc.Row('Select a Metric', no_gutters=True), dbc.Row(dbc.Col(accordion, width=3), justify='end')])])
@@ -250,16 +374,43 @@ choose_filters = html.Div([
         html.Div([
             html.Label('Filter by County'),
             dcc.Dropdown(
-                id='choose-indicator',
+                id='choose-county',
                 options=[{'label': i, 'value': i} for i in all_counties],
                 value=[],
-                multi = True
+                multi = True,
+                placeholder= "Search..."
             )
     ],
     style={'width': '50%', 'display': 'inline-block'})
     ], 
     style={'height': '10%', 'display': 'flex', 'zIndex':-1}
     )
+
+# choose_filters = html.Div([
+#         html.Div([
+#             html.Label('Filter by State'),
+#             dcc.Dropdown(
+#                 id = 'choose-state',
+#                 options= [{'label': state, 'value': state} for state in all_states],
+#                 value= 'United States'
+#         )
+#     ],
+#     style={'width': '50%', 'display': 'inline-block'}),
+
+#         html.Div([
+#             html.Label('Filter by County'),
+#             dcc.Dropdown(
+#                 id='choose-indicator',
+#                 options=[{'label': i, 'value': i} for i in indicators_lst],
+#                 value=[],
+#                 multi = True
+#             )
+#     ],
+#     style={'width': '50%', 'display': 'inline-block'})
+#     ], 
+#     style={'height': '10%', 'display': 'flex', 'zIndex':-1}
+#     )
+
 
 #print(caret_list[True])
 
@@ -283,33 +434,71 @@ nav_bar = html.Div(
         ]) #style={'zIndex': 1})#choose_filters])
 
 
-_navbar = dbc.Navbar(
-    #brand="Demo",
-    #brand_href="#",
-    sticky="top",
-    color="primary",
-    dark="True",
-    children=[
-        dbc.DropdownMenu(
-            nav=True,
-            in_navbar=True,
-            label="Menu",
-            children=[
-                dbc.DropdownMenuItem(html.A('About', href='https://github.com/community-insight-impact/covid_community_vulnerability', target="_blank")),
-                dbc.DropdownMenuItem(html.A('Dataset', href='https://github.com/community-insight-impact/covid_community_vulnerability/blob/master/data/full_dataset.md', target="_blank")),
-                dbc.DropdownMenuItem(divider=True),
-                dbc.DropdownMenuItem(html.A('Methodology', href='https://github.com/community-insight-impact/covid_community_vulnerability/blob/master/documentation/methodology.md', target="_blank")),
-            ],
-        ),
-        #dbc.NavItem(dbc.NavLink("Link", href="#")),
-    ],
-)
+# _navbar = dbc.Navbar(
+#     #brand="Demo",
+#     #brand_href="#",
+#     sticky="top",
+#     color="primary",
+#     dark="True",
+#     children=[
+#         dbc.DropdownMenu(
+#             nav=True,
+#             in_navbar=True,
+#             label="Menu",
+#             children=[
+#                 dbc.DropdownMenuItem(html.A('About', href='https://github.com/community-insight-impact/covid_community_vulnerability', target="_blank")),
+#                 dbc.DropdownMenuItem(html.A('Dataset', href='https://github.com/community-insight-impact/covid_community_vulnerability/blob/master/data/full_dataset.md', target="_blank")),
+#                 dbc.DropdownMenuItem(divider=True),
+#                 dbc.DropdownMenuItem(html.A('Methodology', href='https://github.com/community-insight-impact/covid_community_vulnerability/blob/master/documentation/methodology.md', target="_blank")),
+#             ],
+#         ),
+#         #dbc.NavItem(dbc.NavLink("Link", href="#")),
+#     ],
+# )
 
-map_plus_sidebox = html.Div(id = 'map plus legends', children=[
-	  	html.Div(dcc.Graph(id='counties-map', figure= empty_fig),
+#help(dbc.themes.BOOTSTRAP)
+
+# choose_filters = html.Div([
+# 		html.Div([
+# 			html.Label('Filter by State'),
+# 			dcc.Dropdown(
+# 				id = 'choose-state',
+# 				options= [{'label': state, 'value': state} for state in all_states],
+# 				value= 'United States'
+# 		)
+# 	],
+# 	style={'width': '50%', 'display': 'inline-block'}),
+
+# 		html.Div([
+# 			html.Label('Filter by Indicator'),
+# 			dcc.Dropdown(
+#             	id='choose-indicator',
+#             	options=[{'label': i, 'value': i} for i in indicators_lst],
+#             	value=[],
+#             	multi = True
+#             )
+#     ],
+#     style={'width': '50%', 'display': 'inline-block'})
+#     ], 
+#     style={'height': '10%', 'display': 'flex'}
+#     )
+
+indicators_shown = html.Div(children= [html.P(children="Indicators shown:"), html.Div(id='indicators-shown', children= [])], style= {'height':'20%',"overflowY": 'scroll'})
+
+map_plus_sidebox = html.Div(id = 'map plus legends', children=
+	[html.Div(dcc.Graph(id='counties-map', figure= empty_fig),
    				style= {'width': "80%", 'height':'100%', 'display':'inline-block'}),
+   		# html.Div(id = 'container', #children= html.Div(children=html.Label('no legend'), 
+   		# 		style={
+   		# 	#'label':'no legend',
+	   	# 		'width':'20%', 'height':"40%", 
+	   	# 		'overflowY': 'scroll', 
+	   	# 		'border': '10px solid gray', 'margin': 10, 
+	   	# 		'display': 'inline-block', 'position':'relative'
+	   	# 		},
+	   	# )
 
-	   	accordion_box],
+    html.Div(children=[accordion_box, indicators_shown], style = {'width': '20%'})],
    			style= {'width':'100%', 'height':'500px', 'display':'flex', 'zIndex': -2})
 
 last_updated_indicator = html.Div(children =[html.Label("Last Updated:"), html.Div(id='show-time')], style = {#'border': '5px solid gray',
@@ -435,6 +624,8 @@ instruction_pullouttab= html.Div([sidebar], style = {'zIndex':1000})
 
 
 
+#charts_plus_time = html.Div(children= [horizontal_charts], style = {'display':'grid'})
+
 
 app = dash.Dash(__name__, external_stylesheets= [dbc.themes.BOOTSTRAP, 
 	'https://codepen.io/chriddyp/pen/bWLwgP.css'], 
@@ -443,32 +634,131 @@ app = dash.Dash(__name__, external_stylesheets= [dbc.themes.BOOTSTRAP,
 app.layout = html.Div(children=[
 	#nav_bar,
 	nav_bar,
+    
+	# html.Div([html.Img(src='https://raw.githubusercontent.com/community-insight-impact/covid_community_vulnerability/master/CVI%20Logo%20FINAL%20ONE%20smaller.png',
+	# 	style={'height':'30px'}), 
+	# 	html.Div(html.H2("COVID-19 Community Vulnerability Index", style={'font-size':20, 'height':5,'margin':0, 'display':'inline-block'}), style = {'vertical-align':'middle'})],
+	# 	style={'display':'flex'}),
 	choose_filters,
 	map_plus_sidebox,
 	horizontal_charts,
 	last_updated_indicator,
 
     instruction_pullouttab,
-	
+    dcc.Store(id='chosen-indicators', data=[]),
+	#charts_plus_time,
+    	# html.Div(children='Last update: 23 mins ago.',
+     #    style= {
+     #        "textAlign": "right",
+     #        "color": colors_chart["gray"]
+     #    }),
+    dcc.Store(id= 'chosen-data', data= [])
     ],
         
     #dcc.Interval(id='interval-component', interval=1*1000, n_intervals=0),
 
     style={'height':'100%', 'width': '100%',}) #'overflow':'hidden'})# 'margin':{"r":0,"t":20,"l":0,"b":0}})
+#])
+   	
+
+
+
+   			
+   			#] #figure= fig),#WHERE THE MAP WOULD BE
+
+# @app.callback(
+#     Output('chosen-data', 'data'),
+#     [Input('')])
+
+
+	
+@app.callback(
+    Output('choose-county', 'options'),
+    #Output('show-time', 'children')],
+    [Input('choose-state', 'value')])
+
+def change_cty_options(state):
+    if state == "United States":
+        return [{'label': i, 'value': i} for i in all_counties]
+    else:
+        dff= data[data['State']== state]
+        return [{'label': str(dff.iloc[i]['County + State']), 'value' : str(dff.iloc[i]['County + State'])}  for i in range(dff.shape[0])]
+        
+
+#return [{'label': str(dff.iloc[i]['County'] + ", " + dff.iloc[i]['State']), 'value' : str(dff.iloc[i]['County'] + ", " + dff.iloc[i]['State'])}  for i in range(dff.shape[0])]
+
+
+@app.callback(
+    Output('chosen-data','data'),
+    [Input('choose-state','value'), 
+    Input('choose-county', 'value')])
+
+def define_data(state, counties):
+    if state == "United States":
+        if len(counties) == 0:
+            return data.to_dict('list') 
+        elif len(counties) != 0:
+            dff = pd.DataFrame(columns=data.columns)
+            for cty in counties:
+                cty_df = data[data['County + State'] == cty]
+                dff = pd.concat([dff, cty_df], join='outer')
+            return dff.to_dict('list')
+    else:
+        if len(counties) == 0:
+            return data[data['State']==state].to_dict('list')
+        elif len(counties) != 0:
+            dff2 = pd.DataFrame(columns=data.columns)
+            for cty in counties:
+                cty_df = data[data['County + State'] == cty]
+                dff2 = pd.concat([dff2, cty_df], join='outer')
+            return dff2.to_dict('list')
+
+@app.callback(
+    [Output('indicators-shown', 'children'), 
+    Output('chosen-indicators', 'data')],
+    [Input(f'checkbox-{i}', 'value') for i in range(3)]+
+    [Input("severe-indicators", 'value')])
+
+def show_indicators(score1, score2, score3, metrics):
+	scores = score1 + score2 + score3 + metrics
+	return " | ".join(score for score in scores if score), scores
+#     ctx = dash.callback_context
+#     if not ctx.triggered:
+#         return metrics#, criteria[score_lst[0]]
+#     else:
+#         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+#         if button_id == "checkbox-0":
+#             return [criteria[0]] + metrics
+#         elif button_id == "checkbox-1":
+#             return [criteria[1]] + metrics
+#         elif button_id == 'checkbox-2':
+#             return [criteria[2]] + metrics
+
+
+#         dff2 = pd.DataFrame(columns=data.columns)
+# cty_df = data[data['County + State'] == 'Bibb, Alabama']
+# dff2 = pd.concat([dff2, cty_df], join='outer')
+
+# @app.callback(
+#     Output('indicators-shown', 'value'),
+#     [Input('{i}', 'id') for i in indicators_lst])
+
+# def store_indicators():
+
 
 @app.callback(
 	Output('counties-map', 'figure'),
 	#Output('show-time', 'children')],
-	[Input('choose-state', 'value'), 
-   	Input('choose-indicator', 'value')])
+	[Input('chosen-data', 'data'), 
+   	Input('chosen-indicators', 'data')])
 
-def update_map(chosen_state, chosen_indicator):
+def update_map(chosen_data, chosen_indicator):
 	#if chosen_state != None:
-	if chosen_state == "United States":
-		if len(chosen_indicator) != 0:
+	#if chosen_state == "United States":
+	if len(chosen_indicator) != 0:
 			#if chosen_state == "United States":
-			fig = px.choropleth_mapbox(data.to_dict('records'), 
-			geojson=counties, locations=data.FIPS, 
+		fig = px.choropleth_mapbox(chosen_data, 
+			geojson=counties, locations=chosen_data['FIPS'], 
 			color=chosen_indicator[0],
 			color_continuous_scale=colors_map[chosen_indicator[0]],
 			range_color=index_range[chosen_indicator[0]],
@@ -477,49 +767,103 @@ def update_map(chosen_state, chosen_indicator):
 			opacity=0.8,
 			labels={chosen_indicator[0]}, hover_data= ['County', 'State'] + indicators_lst,
 			)
-			fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
+		fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
 		#fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
-			if len(chosen_indicator) > 1:
-				for val_indx in range(1, len(chosen_indicator)):
-
-					fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=counties, locations=data.FIPS, z=data[chosen_indicator[val_indx]],
+		if len(chosen_indicator) > 1:
+			for val_indx in range(1, len(chosen_indicator)):
+				fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=counties, locations=chosen_data['FIPS'], z=chosen_data[chosen_indicator[val_indx]],
 						colorscale=colors_map[chosen_indicator[val_indx]],
 						zmin=index_range[chosen_indicator[val_indx]][0],
 						zmax=index_range[chosen_indicator[val_indx]][1],
 						marker_line_width=0.1, marker_opacity=0.8, showscale=False, #hovertemplate =  "FIPS=%{data.FIPS}<br>County=%%{data.County}<br>State=%%{data.State}<extra></extra>"))
-						text= data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))#, hovertemplate= data_lst ))#, hovertext=[data[y] for y in indicators_lst]))
+						text= chosen_data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))#, hovertemplate= data_lst ))#, hovertext=[data[y] for y in indicators_lst]))
 						#hovertemplate=[County: %{data['County']}, State:%{data['State']}] + [y: %{data[y]} for y in indicators_lst]))
-					fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
+				fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
 					#fig.update_layout(hover_data= ['County', 'State'] + indicators_lst)
-		else:
-		 	fig = empty_fig
-		return fig
 	else:
-		dff = data[data['State'] == chosen_state]
-		if len(chosen_indicator) != 0:
-			#if chosen_state == "United States":
-			fig = px.choropleth_mapbox(dff.to_dict('records'), 
-				geojson=counties, locations=dff.FIPS, 
-				color=chosen_indicator[0],
-				color_continuous_scale=colors_map[chosen_indicator[0]],
-				range_color=index_range[chosen_indicator[0]],
-				mapbox_style="carto-positron",
-				zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
-				opacity=0.8,
-				labels={chosen_indicator[0]}, hover_data= ['County', 'State'] + indicators_lst
-				)
-			fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
-			if len(chosen_indicator) > 1:
-				for val_indx in range(1, len(chosen_indicator)):
-					fig.add_trace(go.Choroplethmapbox(geojson=counties, locations=dff.FIPS, z=dff[chosen_indicator[val_indx]],
-					colorscale=colors_map[chosen_indicator[val_indx]],
-					zmin=index_range[chosen_indicator[val_indx]][0],
-					zmax=index_range[chosen_indicator[val_indx]][1],
-					marker_line_width=0.1, marker_opacity=0.8, showscale=False, text= dff['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))
-					#fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[val_indx], margin={"r":0,"t":0,"l":0,"b":0})
-		else:
-			fig = empty_fig #go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
-		return fig
+		fig = empty_fig#go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
+		 	#fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False)
+		#fig.update_trace(hover_data= ['County', 'State'] + indicators_lst)
+		#geojson=counties, locations=data.FIPS, hover_data= ['County', 'State'] + indicators_lst))
+	return fig
+	# else:
+	# 	dff = data[data['State'] == chosen_state]
+	# 	if len(chosen_indicator) != 0:
+	# 		#if chosen_state == "United States":
+	# 		fig = px.choropleth_mapbox(dff.to_dict('records'), 
+	# 			geojson=counties, locations=dff.FIPS, 
+	# 			color=chosen_indicator[0],
+	# 			color_continuous_scale=colors_map[chosen_indicator[0]],
+	# 			range_color=index_range[chosen_indicator[0]],
+	# 			mapbox_style="carto-positron",
+	# 			zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
+	# 			opacity=0.8,
+	# 			labels={chosen_indicator[0]}, hover_data= ['County', 'State'] + indicators_lst
+	# 			)
+	# 		fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
+	# 		if len(chosen_indicator) > 1:
+	# 			for val_indx in range(1, len(chosen_indicator)):
+	# 				fig.add_trace(go.Choroplethmapbox(geojson=counties, locations=dff.FIPS, z=dff[chosen_indicator[val_indx]],
+	# 				colorscale=colors_map[chosen_indicator[val_indx]],
+	# 				zmin=index_range[chosen_indicator[val_indx]][0],
+	# 				zmax=index_range[chosen_indicator[val_indx]][1],
+	# 				marker_line_width=0.1, marker_opacity=0.8, showscale=False, text= dff['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))
+	# 				#fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[val_indx], margin={"r":0,"t":0,"l":0,"b":0})
+	# 	else:
+	# 		fig = empty_fig #go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
+				#fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False)
+
+
+	# else: 
+	# 	fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
+	# 	fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False)
+
+
+
+					# px.choropleth_mapbox(data, 
+					# geojson=counties, locations=data.FIPS, 
+					# color=chosen_indicator[val_indx],
+					# color_continuous_scale=colors[chosen_indicator[val_indx]],
+					# range_color=index_range[chosen_indicator[val_indx]],
+					# mapbox_style="carto-positron",
+					# zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
+					# opacity=0.8,
+					# labels={chosen_indicator[val_indx]}, hover_data= ['County', 'State'] + indicators_lst
+					# ))
+		#fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
+			#return fig
+		# return fig
+
+
+#help(html.Img)
+
+# @app.callback(
+# 	Output('container', 'children'),
+# 	[Input('choose-indicator','value')])
+
+# def update_color_scale(chosen_indicators):
+# 	all_scales = []
+# 	if len(chosen_indicators) != 0:
+# 		for indicator in chosen_indicators:
+# 			all_scales.append(html.Img(src=color_scales[indicator]))
+# 		return html.Div(children=[html.Label('Legends')]+all_scales, style= 
+# 			{#'label':'Legends',
+# 			'width':'100%', 'height':400, 
+# 			'overflowY': 'scroll', 
+# 			#'border': '10px solid gray', 
+# 			#'margin': 10,
+# 			'display': 'inline-block'
+# 			})
+# 	else:
+# 		return html.Div(children=html.Label('no legend'), style= 
+# 			{'width':'100%', 'height':400, 
+# 			#'overflowY': 'scroll', 
+# 			#'border': '10px solid gray', 
+# 			#'margin': 10, 
+# 			'display': 'inline-block'
+# 			})
+
+
 
 #********SCORE CHART CALLBACK********
 @app.callback(
@@ -677,6 +1021,49 @@ def change_icon(n0, is_open0):
     elif n0 and is_open0 == False:
         return "fa fa-caret-down"
 
+        
+    
+    # else:
+    #     raise PreventUpdate
+#     ctx = dash.callback_context
+#     if not ctx.triggered:
+#         return (caret_list[is_open1], caret_list[is_open2], caret_list[is_open3])  
+#     else:
+#         button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+#         if button_id == "score-0-toggle" and n1:
+#             #print(n1)
+#             return (caret_list[not is_open1], caret_list[is_open2], caret_list[is_open3])
+#         elif button_id == "score-1-toggle" and n2:
+#             return (caret_list[is_open1], caret_list[not is_open2], caret_list[is_open3])
+#         elif button_id == "score-2-toggle" and n3:
+#             return (caret_list[is_open1], caret_list[is_open2], caret_list[not is_open3])
+ #    if n1 or n2 or n3:
+	# #if is_open1 == True or is_open2 == True or is_open3 == True: 
+	# 	#if is_open1 == True and is_open2 == False and is_open3 == False:
+	# 	# return  "fa fa-caret-down", "fa fa-caret-right", "fa fa-caret-right"
+	# 	# elif is_open2 == True and is_open1 == False and is_open3== False:
+	# 	# 	return 'fa fa-caret-right', "fa fa-caret-down", 'fa fa-caret-right'
+	# 	# elif is_open3 == True and is_open2 == False and is_open1== False:
+	# 	# 	return 'fa fa-caret-right', 'fa fa-caret-right', "fa fa-caret-down"
+	# #else:
+ #        return (caret_list[is_open1], caret_list[is_open2], caret_list[is_open3])	
+ #    else:
+ #        return (caret_list[is_open1], caret_list[is_open2], caret_list[is_open3])   
+    #ctx = dash.callback_context
+    # if n1 or n2 or n3:
+    #     return (caret_list[is_open1], caret_list[is_open2], caret_list[is_open3])   
+    #else:
+    #return (caret_list[is_open1], caret_list[is_open2], caret_list[is_open3])   
+        # button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+        # if button_id == "score-0-toggle" and n1:
+        #     #print(n1)
+        #     return (caret_list[not is_open1], caret_list[is_open2], caret_list[is_open3])   
+        # elif button_id == "score-1-toggle" and n2:
+        #     return (caret_list[is_open1], caret_list[not is_open2], caret_list[is_open3])   
+        # elif button_id == "score-2-toggle" and n3:
+        #     return (caret_list[is_open1], caret_list[is_open2], caret_list[not is_open3])   
+
+
 @app.callback(
     Output("sidebar", "className"),
     [Input("sidebar-toggle", "n_clicks")],
@@ -685,6 +1072,33 @@ def toggle_classname(n, classname):
     if n and classname == "":
         return "collapsed"
     return ""
+# @app.callback(Output('show-time','children'), 
+# 	[Input('interval-component','n_intervals')])
+
+# def update_time(n):
+# 	return format_time()
+
+"""
+		else: 
+			dff = data[data['State'] == chosen_state]
+			fig.add_trace(px.choropleth_mapbox(dff, geojson=counties, locations=dff.FIPS, color=chosen_indicator,
+				color_continuous_scale=colors[chosen_indicator],
+				range_color=index_range[chosen_indicator],
+				mapbox_style="carto-positron",
+				zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
+				opacity=0.8,
+				labels={chosen_indicator},
+				hover_data = ['County', 'State'] + indicators_lst))
+			fig.update_layout(
+				title_text = chosen_indicator,
+				margin={"r":0,"t":0,"l":0,"b":20})
+				'''
+
+		return fig
+
+# @app.callback(
+# 	Output('color-scale', 'src'))
+"""
 
 
 if __name__ == '__main__':
