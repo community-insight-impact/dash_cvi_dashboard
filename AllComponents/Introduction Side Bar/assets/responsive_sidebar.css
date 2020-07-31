@@ -1,0 +1,72 @@
+#sidebar {
+    position: fixed;
+      /*position: fixed;  Stay in place */
+    z-index: 1;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 25rem;
+    text-align: left;
+    transition: margin 0.5s ease-in-out, padding 0.5s ease-in-out;
+    padding-right: 0.8rem;
+    padding: 2rem 1rem;
+    background-color: #f8f9fa;
+  }
+
+#sidebar h2 {
+  text-align: left;
+  margin-bottom: 0;
+}
+
+#sidebar-toggle {
+  display: none;
+}
+
+#collapse *:first-child {
+  margin-top: 1rem;
+}
+
+/* add the 'introduction' pull out tab for the toggle */
+.navbar-toggler-icon {
+  /*background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");*/
+  /*float:left;*/
+  width:100px;
+  /*margin-left: 10px;*/
+  padding: 0.25rem;
+  height: 22px;
+  line-height: 22px;
+  text-align:center;
+  background-color:#f8f9fa;
+  /*border:1px solid #b7b7b7;*/
+  color:#606060;
+  cursor:pointer;
+  display:inline-block;
+  font:bold 13px/100% Arial, sans-serif;
+  transform-origin: 0 0;
+  transform: rotate(270deg);
+}
+
+#page-content {
+  padding: 2rem 1rem;
+  width: 100%;
+}
+
+#sidebar-toggle {
+    display: inline-block;
+    position: relative;
+    top: 20rem;
+    right: -3.5rem;
+    transition: top 0.5s ease-in-out;
+  }
+
+  /* add negative margin to sidebar to achieve the collapse */
+#sidebar.collapsed {
+    margin-left: -24.95rem;
+    padding-right: 0.8rem;
+  }
+
+  /* position the 'introduction' pull out tab */
+#sidebar.collapsed #sidebar-toggle {
+    top: 20rem;
+    right: -3.5rem;
+  }
