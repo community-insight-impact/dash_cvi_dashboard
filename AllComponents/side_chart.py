@@ -21,7 +21,7 @@ side_chart = html.Div(children=[
             html.Div(id= "choose_score", children = [
                html.I(id='prev-score', className="fa fa-caret-left", **{'aria-hidden': 'true'}, style = {'display':'inline-block', 'fontSize': '16px','marginRight': '10px', 'marginTop':'5px'}),
                html.Div(html.P(id= 'count-score', #children='Severe COVID Case Complications'
-                    style= {'textAlign':'center', 'display':'inline-block', 'font-size': '12px', 'textOverflow':'ellipsis'}), style = {'width': '100%'}), #style = {'width': 150, 'position':'static', 'textOverflow':'ellipsis'}, 
+                    ), style = {'width': '100%'}), #style = {'width': 150, 'position':'static', 'textOverflow':'ellipsis'}, 
                html.I(id='next-score', className="fa fa-caret-right", **{'aria-hidden': 'true'}, style={'display':'inline-block', 'fontSize': '16px', 'marginLeft': '10px',
            'marginTop':'5px'})
                ],style={'textAlign': 'center', 'position':'static', 'display':'flex', 'marginTop':'20px'})#'display':'flex', 'margin-top':55,'margin-left':30, 'position':'static'}) #'position':'static', 'text-align':'center'})
