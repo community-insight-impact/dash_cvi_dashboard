@@ -54,5 +54,5 @@ choose_filters = html.Div([
     ],
     style={'width': '50%', 'display': 'inline-block'})
     ], 
-    style={'height': '10%', 'display': 'flex', 'zIndex':-1}
+    style={'height': '10%', 'display': 'flex', 'zIndex':-1, 'marginLeft': '5px'}
     )

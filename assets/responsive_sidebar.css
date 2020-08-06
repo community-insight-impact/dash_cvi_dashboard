@@ -11,6 +11,7 @@
     padding-right: 0.8rem;
     padding: 2rem 1rem;
     background-color: #f8f9fa;
+    height:100%;
   }
 
 #sidebar h2 {
@@ -20,7 +21,7 @@
 
 #sidebar img {
   width: 230px;
-  height: 150px;
+  height: 130px;
 }
 
 #sidebar-toggle {
@@ -28,7 +29,7 @@
 }
 
 #collapse *:first-child {
-  margin-top: 1rem;
+  /*margin-top: 1rem;*/
 }
 
 /* add the 'introduction' pull out tab for the toggle */
@@ -75,3 +76,17 @@
     top: 20rem;
     right: -3.5rem;
   }
+
+#sidebar #blurb{
+  height:100%;
+  }
+
+#sidebar #lead{
+  height: 100%;
+}
+
+#sidebar #title-sidebar{
+  text-align: center;
+  font-size: 25;
+  width: 100%;
+}

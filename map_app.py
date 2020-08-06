@@ -11,7 +11,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import flask
-# import glob
 import os
 import dash_bootstrap_components as dbc
 import datetime
@@ -27,6 +26,8 @@ from AllComponents import last_updated as updated
 from AllComponents import multimap_plotly as multimap 
 from AllComponents import nav_bar as nav 
 from AllComponents import side_chart as side
+from AllComponents import show_legends as legend
+
 
 #MERGE ALL DATA INTO 1 DF
 data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
@@ -52,8 +53,6 @@ criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', '
 
 #FOR SIDE CHART
 indicators_lst = ['Severe COVID Case Complications',
-'Risk of Severe Economic Harm', 
-'Need for Mobile Health Resources',
 'covid_cases',
 'Years of Potential Life Lost Rate',
 '% Fair or Poor Health',
@@ -71,7 +70,9 @@ indicators_lst = ['Severe COVID Case Complications',
 '% Unemployed',
 'High School Graduation Rate',
 'Primary Care Physicians Rate',
-'% Home Internet Access'
+'% Home Internet Access',
+'Risk of Severe Economic Harm', 
+'Need for Mobile Health Resources',
 ]
 
 #FOR HOVERBOARD
@@ -96,7 +97,8 @@ app.layout = html.Div(id= 'big-screen', children=[
     horizontal_charts,
     intro.instruction_pullouttab,
     dcc.Store(id='chosen-indicators', data=[]),
-    dcc.Store(id= 'chosen-data', data= [])
+    dcc.Store(id= 'chosen-data', data= []),
+    legend.color_scale
     ],
     style={'height':'100%', 'width': '100%'}) #'overflow':'hidden'})# 'margin':{"r":0,"t":20,"l":0,"b":0}})
 
@@ -229,12 +231,33 @@ def update_map(chosen_data, chosen_indicator):
         #fig.update_trace(hover_data= ['County', 'State'] + indicators_lst)
         #geojson=counties, locations=data.FIPS, hover_data= ['County', 'State'] + indicators_lst))
     return fig
-   
+
+@app.callback(
+    Output('color-scales', 'children'),
+    [Input('chosen-indicators', 'data')])
+
+def make_image(indicators):
+    scales =[]
+    for indicator in indicators:
+        cscale = legend.make_legend(indicators_lst.index(indicator))
+        scales.append(cscale)
+    return scales
+
 #********SCORE CHART CALLBACK********
+#FOR SIDE CHART CALLBACK
+def make_50_df(datamap, i):
+    full_datasets50 = {}
+    merged_f=datamap[['County','State', criteria[i]]]
+    sorted_cases = merged_f.sort_values(by=[criteria[i]], ascending= False)
+    top_50 = sorted_cases.head(50)
+    #full_datasets50[criteria[i]]= top_50
+    return top_50
+
 @app.callback(
     Output('index-score', 'data'),
     [Input('prev-score', 'n_clicks'),
-    Input('next-score', 'n_clicks')], [State('index-score', 'data')])
+    Input('next-score', 'n_clicks')], 
+    [State('index-score', 'data')])
 
 def click_button(previous, next, score_lst):
     ctx = dash.callback_context
@@ -242,7 +265,7 @@ def click_button(previous, next, score_lst):
         return score_lst#, criteria[score_lst[0]]
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        print(button_id)
+        # print(button_id)
         if button_id == "prev-score":
             prev = score_lst.pop(-1)
             score_lst.insert(0, prev)
@@ -253,59 +276,96 @@ def click_button(previous, next, score_lst):
             return score_lst#, criteria[score_lst[0]]
 
 @app.callback(
+    Output('total-ctys', 'data'),
+    [Input('choose-state', 'value')], 
+    [State('index-score', 'data')])
+
+def determine_total_top(state, score_i):
+    #ctx = dash.callback_context
+    if state == 'United States':
+        total_cty = 50
+    else:
+        score_indx = score_i[0]
+        score = criteria[score_indx]
+        datasets50 = make_50_df(full_data[full_data['State'] == state], score_indx)
+        #df = full_datasets50[score]
+        total_cty = len(datasets50)
+    return total_cty
+
+@app.callback(
     Output('index-county', 'data'),
     #Output('count-county', 'children')],
     [Input('prev-county', 'n_clicks'), 
-    Input('next-county', 'n_clicks')],
-    [State('index-county', 'data')])
+    Input('next-county', 'n_clicks'), 
+    Input('choose-state', 'value')],
+    [
+    State('total-ctys', 'data'),
+    State('index-county', 'data')])
 
-def click_county(prev, next, num):
+def click_county(prev, next, state, total_cty, num):
     ctx = dash.callback_context
+    # dif = total_cty - num
+    #num = total_cty - dif
     if not ctx.triggered:
-        return num#, '{} of 50'.format(num) 
+        return num  #, '{} of 50'.format(num) 
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        if button_id == 'prev-county':
+        if button_id == 'choose-state':
+            num = 0
+        elif button_id == 'prev-county':
             if num == 0:
-                num = 49
+                num = total_cty - 1
             else:
-                num = num -1
+                num = num - 1 
             #return num
-        if button_id == 'next-county':
-            if num == 49:
+        elif button_id == 'next-county':
+            if num == total_cty - 1:
                 num = 0
             else:
-                num = num +1
-        return num#, '{} of 50'.format(num)        
+                num = num + 1
+        # print(num)
+        # ctx_msg = json.dumps({
+        #     'states': ctx.states,
+        #     'triggered': ctx.triggered,
+        #     'inputs': ctx.inputs
+        # }, indent=2)
+
+        return num #, '{} of 50'.format(num)        
 
 
-#FOR SIDE CHART CALLBACK
-full_datasets50 = {}
-for i in range(3):
-    merged_f=full_data[['County','State', criteria[i]]]
-    sorted_cases = merged_f.sort_values(by=[criteria[i]], ascending= False)
-    top_50 = sorted_cases.head(50)
-    full_datasets50[criteria[i]]= top_50
+# print(full_data.shape[0])
+# print(full_data)
+
+text_colors = ['#ff385e', '#0c3f47', '#ffc05f']
 
 @app.callback([Output('chart_num', 'children'), 
     Output('count-score','children'),
+    Output('count-score','style'),
     Output('count-county', 'children')], 
     [Input('index-county', 'data'),
-    Input('index-score', 'data')])
+    Input('index-score', 'data'), 
+    Input('choose-state', 'value'), 
+    Input('total-ctys', 'data')])
 
-def chart_display(county_i, score_i):
+def chart_display(cty_indx, score_i, state, total_cty):
     #time.sleep(3)
-    cty_indx = county_i
+    # cty_indx = county_i
     score_indx = score_i[0]
     score = criteria[score_indx]
-    df = full_datasets50[score]
+    if state == 'United States':
+        data = full_data
+    else: 
+        data = full_data[full_data['State'] == state]
+    df = make_50_df(data, score_indx)
+    #çdf = full_datasets50[score]
     
     return [
-        html.Div(html.H4(children=score, style={'textAlign':'center','fontSize':18, 'marginBottom':0, 'position':'static', 'textOverflow':'ellipsis', 'overflow':'hidden'})),
+        html.Div(html.H4(children=score, style={'textAlign':'center','fontSize':18, 'marginBottom':0, 'position':'static', 'textOverflow':'ellipsis', 'overflow':'hidden', 'color': text_colors[score_indx]})),
         html.H4('County Score',style={'textAlign':'center', 'fontSize': 18, 'marginBottom': 5, 'position':'static'}),
         html.H4(str(round(df.iloc[cty_indx][score],2)), style= { 'fontWeight': 'bold', 'textAlign':'center', 'marginBottom': 5}),
-        html.H5(children= str(df.iloc[cty_indx]['County'] + ", " + df.iloc[cty_indx]['State']), style = {'textAlign':'center', 'fontSize': 19, 'position':'static'})#'margin-bottom': 50,
-        ], criteria[score_indx], ' {} of 50 '.format(cty_indx + 1)
+        html.H5(children= str(df.iloc[cty_indx]['County'] + ", " + df.iloc[cty_indx]['State']), 
+        style = {'textAlign':'center', 'fontSize': 19, 'position':'static'})#'margin-bottom': 50,
+        ], score, {'textAlign':'center', 'display':'inline-block', 'font-size': '12px', 'textOverflow':'ellipsis', 'color': text_colors[score_indx]}, '{} of {}'.format(cty_indx + 1, total_cty)
 
         
 @app.callback(
@@ -399,6 +459,6 @@ def toggle_classname(n, classname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8888)
 
 

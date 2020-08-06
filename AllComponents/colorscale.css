@@ -1,0 +1,5 @@
+.legend{
+	position: absolute;
+	z-index: 10000000000;
+	bottom: 50rem;
+}
