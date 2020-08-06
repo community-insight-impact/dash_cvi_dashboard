@@ -2,7 +2,7 @@
 
 Repository for developing the Dash implementation of our COVID-19 Community Vulnerability Index dashboard.
 
-![Image of Map App]('/App&#32;Visualization/Complete&#32;App&#32;08.06.png')
+![Image of Map App](\App&#32;Visualization/Complete&#32;App&#32;08.06.png)
 
 Full Design Mock-up of the app can be found [here](https://github.com/community-insight-impact/dash_cvi_dashboard/blob/master/App%20Visualization/Dash%20Design%20Mock%20Ups%20CVI%20Dashboard.pdf)
 
