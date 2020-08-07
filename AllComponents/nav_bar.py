@@ -11,7 +11,7 @@ nav_bar = html.Div(
         children=[
             html.Img(src='https://raw.githubusercontent.com/community-insight-impact/covid_community_vulnerability/master/CVI%20Logo%20FINAL%20ONE%20smaller.png',
         style={'height':'28px','margin':8}), #html.A("COVID-19 Community Vulnerability Index"), 
-            html.H2("COVID-19 Community Vulnerability Index  ", style={'font-size':18,'margin-top':14, 'vertical-align': 'middle', 'color': 'white'}),
+            html.H2("COVID-19 Community Vulnerability Index  ", style={'font-size':18, 'vertical-align': 'middle', 'color': 'white'}),
             html.Div(className='dropdown', 
             children=[html.Button(className='dropbtn', children= html.Span(children=[html.P('Menu ',  style = {'display':'inline-block'}) ,#style={'margin-bottom': -10}),
                 html.I(className="fa fa-caret-down", **{'aria-hidden': 'true'}, style = {'display':'inline-block', 'marginTop': '10px', 'marginLeft':'5px'})], style = {'display':'flex'})), 

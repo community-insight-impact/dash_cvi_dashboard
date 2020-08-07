@@ -5,12 +5,12 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
 
-sidebar_header = dbc.Row(
-    [dbc.Col(children=[html.H2(children='How to Use the COVID-19 Community Vulnerability Index', 
+sidebar_header = html.Div(
+    [html.Div(children=[html.H2(children='How to Use the COVID-19 Community Vulnerability Index', 
         style = {'font-size':'25px','textAlign':'center'}), 
         html.Img(src= 'https://raw.githubusercontent.com/community-insight-impact/covid_community_vulnerability/master/CVI%20Logo%20FINAL%20ONE%20smaller.png')], 
-        id= "title-sidebar",className="display-4", align='center'),
-        dbc.Col(
+        id= "title-sidebar",className="display-4"),
+        html.Div(
             [html.Div(
                     # styled into an 'introduction' pull-out tab
                     html.Span(className="navbar-toggler-icon", children="Introduction"),
@@ -19,9 +19,9 @@ sidebar_header = dbc.Row(
                 ),
             ],
           
-            width=3,
+            # width=3,
             # vertically align the toggle in the center
-            align="center",
+            # align="center",
         ),
     ]
 )

@@ -119,7 +119,7 @@ empty_fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_c
 
 map_plus_sidebox = html.Div(id = 'map plus legends', children=
     [html.Div(dcc.Loading(id= 'loading-1',children= [html.Div(dcc.Graph(id='counties-map', figure= empty_fig))], type='default'),
-                style= {'width': "79%", 'height':'100%', 'display':'inline-block', 'marginLeft': '5px'}),
+                style= {'width': "79%", 'height':'100%', 'display':'inline-block', 'marginLeft': '5px', 'marginTop': '5px'}),
 
     html.Div(children=[menu.accordion_box, menu.indicators_shown], style = {'width': '20%'})],
             style= {'width':'100%', 'height':'50%', 'display':'flex', 'zIndex': -2})

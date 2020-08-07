@@ -1,16 +1,16 @@
-import pandas as pd
-pd.set_option('display.max_columns', None)
-from urllib.request import urlopen
-import json
-with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-    counties = json.load(response)
-import plotly.express as px
-import plotly.graph_objects as go
-import dash
-import dash_core_components as dcc
+# import pandas as pd
+# pd.set_option('display.max_columns', None)
+# from urllib.request import urlopen
+# import json
+# with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+#     counties = json.load(response)
+# import plotly.express as px
+# import plotly.graph_objects as go
+# import dash
+# import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
-from AllComponents import dropdown_menu as menu
+# from dash.dependencies import Input, Output
+# from AllComponents import dropdown_menu as menu
 #import multimap_plotly as multimap 
 #import sigma_calculation as sig
 

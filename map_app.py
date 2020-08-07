@@ -2,8 +2,14 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 from urllib.request import urlopen
 import json
+from http.client import IncompleteRead
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+    # except IncompleteRead:
+    #     continue
     counties = json.load(response)
+
+# import requests
+# response = requests.get('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json')
 import plotly.express as px
 import plotly.graph_objects as go
 import dash
@@ -14,6 +20,8 @@ import flask
 import os
 import dash_bootstrap_components as dbc
 import datetime
+# import grasia_dash_components as gdc
+# import dash_defer_js_import as dji
 from dash.exceptions import PreventUpdate
 # import sys
 # sys.path.insert(1, '/path/to/application/app/folder')
@@ -98,10 +106,11 @@ app.layout = html.Div(id= 'big-screen', children=[
     intro.instruction_pullouttab,
     dcc.Store(id='chosen-indicators', data=[]),
     dcc.Store(id= 'chosen-data', data= []),
-    legend.color_scale
+    legend.color_scale,
+    # dji.Import(src="/assets/intro_autocollapse.js")
     ],
     style={'height':'100%', 'width': '100%'}) #'overflow':'hidden'})# 'margin':{"r":0,"t":20,"l":0,"b":0}})
-
+# app.layout += html.Article(dji.Import(src="/assets/intro_autocollapse.js"))
 
 #CALLBACKS
 @app.callback(
@@ -459,6 +468,6 @@ def toggle_classname(n, classname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8888)
+    app.run_server(debug=True)
 
 
