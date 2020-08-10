@@ -1,0 +1,5 @@
+# .gitignore
+
+Procfile
+requirements.txt
+runtime.txt
