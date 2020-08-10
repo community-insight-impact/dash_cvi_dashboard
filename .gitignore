@@ -3,3 +3,4 @@
 Procfile
 requirements.txt
 runtime.txt
+AllComponents/__pycache__/*

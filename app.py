@@ -2,14 +2,8 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 from urllib.request import urlopen
 import json
-from http.client import IncompleteRead
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-    # except IncompleteRead:
-    #     continue
     counties = json.load(response)
-
-# import requests
-# response = requests.get('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json')
 import plotly.express as px
 import plotly.graph_objects as go
 import dash
@@ -17,14 +11,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import flask
-import os
 import dash_bootstrap_components as dbc
-import datetime
-# import grasia_dash_components as gdc
-# import dash_defer_js_import as dji
-from dash.exceptions import PreventUpdate
-# import sys
-# sys.path.insert(1, '/path/to/application/app/folder')
 from AllComponents import sigma_calculation as sig
 from AllComponents import choose_filters as filters
 from AllComponents import covid_bar_chart as bar
