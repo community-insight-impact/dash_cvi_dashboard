@@ -25,17 +25,3 @@ nav_bar = html.Div(
         ]) #style={'zIndex': 1})#choose_filters])
 
 
-
-# app = dash.Dash(
-#     external_stylesheets=['/assets/font-awesome.min.css'],
-#     # these meta_tags ensure content is scaled correctly on different devices
-#     # see: https://www.w3schools.com/css/css_rwd_viewport.asp for more
-#     meta_tags=[
-#         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-#     ],
-# )
-
-#app.layout = nav_bar
-
-# if __name__ == "__main__":
-#     app.run_server(port=8888, debug=True)
