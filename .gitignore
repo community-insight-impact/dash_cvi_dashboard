@@ -1,6 +1,4 @@
 # .gitignore
 
-Procfile
-requirements.txt
-runtime.txt
-AllComponents/__pycache__/*
+App*Visualization/*
+#AllComponents/__pycache__/*
