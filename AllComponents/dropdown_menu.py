@@ -2,10 +2,6 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
-import pandas as pd
-from dash.exceptions import PreventUpdate
-import json
 
 accordion_text_colors = ['#ff385e', '#0c3f47', '#ffc05f']
 
@@ -78,8 +74,7 @@ def make_item(i):
                 id=f"collapse-{i}",
             )
         ],
-        #, style={'height': 60}
-    )#style= {'href':'dbc.themes.BOOTSTRAP'})
+    )
 
 accordion = html.Div([make_item(0), make_item(1), make_item(2)], className="accordion")
 
@@ -91,14 +86,6 @@ accordion_box = html.Div([
 indicators_shown = html.Div(children= [html.P(children="Indicators shown:"), html.Div(id='indicators-shown', children= [])], style= {'height':'90px',"overflowY": 'scroll',
     'border': '5px solid gray', 'margin': '5px', 'padding': '5px', 'width':'100%'})
 
-#FOR TESTING
-# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/font-awesome.min.css', dbc.themes.BOOTSTRAP]
-
-# app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css', '/assets/font-awesome.min.css'])
-
-# app.layout = accordion_box	
-# if __name__ == '__main__':
-#     app.run_server(debug=True)
 
 
 

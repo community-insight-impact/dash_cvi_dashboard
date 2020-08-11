@@ -1,9 +1,12 @@
 import pandas as pd
 pd.set_option('display.max_columns', None)
 from urllib.request import urlopen
+<<<<<<< HEAD:app.py
 import json
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
     counties = json.load(response)
+=======
+>>>>>>> 39761d85f19de5463fdb9dbb6f26965f3cca374d:main.py
 import plotly.express as px
 import plotly.graph_objects as go
 import dash
@@ -12,36 +15,48 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import flask
 import dash_bootstrap_components as dbc
+<<<<<<< HEAD:app.py
+=======
+from dash.exceptions import PreventUpdate
+>>>>>>> 39761d85f19de5463fdb9dbb6f26965f3cca374d:main.py
 from AllComponents import sigma_calculation as sig
 from AllComponents import choose_filters as filters
 from AllComponents import covid_bar_chart as bar
-#from All Components import dropdown_menu as menu
 from AllComponents import intro_sidebar as intro
 from AllComponents import last_updated as updated 
 from AllComponents import multimap_plotly as multimap 
 from AllComponents import nav_bar as nav 
 from AllComponents import side_chart as side
 from AllComponents import show_legends as legend
+from flask_caching import Cache
+from AllComponents import sigma_calculation as sig
 
+external_stylesheets = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-#MERGE ALL DATA INTO 1 DF
+# @cache.memoize(timeout=TIMEOUT)
+# def give_df():
+    #MERGE ALL DATA INTO 1 DF
 data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
 data_str = data.applymap(str)
 data2 = pd.read_csv("data/economic_score_data.csv", dtype={'FIPS': str})
 data3 = pd.read_csv("data/mobile_health_score_data.csv", dtype={'FIPS': str})
+#    return data.merge(data2, how='outer').merge(data3, how='outer')
+
+#data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
+
+#FULL DATAFRAME
+full_data = data.merge(data2, how='outer').merge(data3, how='outer')
+full_data_str = full_data.applymap(str)
 
 #Add county +state name
 all_counties = []
 big_i = data.shape[0]
 for each_i in range(big_i):
-    cty= str(data.iloc[each_i]['County'] + ", " + data.iloc[each_i]['State'])
+    cty= str(full_data.iloc[each_i]['County'] + ", " + full_data.iloc[each_i]['State'])
     all_counties.append(cty)
 #print(all_counties)
-data['County + State'] = all_counties
+full_data['County + State'] = all_counties
 
-#FULL DATAFRAME
-full_data = data.merge(data2, how='outer').merge(data3, how='outer')
-full_data_str = full_data.applymap(str)
 
 #SCORES
 criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', 'Need for Mobile Health Resources']
@@ -70,6 +85,13 @@ indicators_lst = ['Severe COVID Case Complications',
 'Need for Mobile Health Resources',
 ]
 
+index_range = {}
+for indicator in indicators_lst:
+    if indicator == 'Income Ratio' or indicator == '% 65 and over' or indicator == '% Unemployed':
+        index_range[indicator] = sig.calculate_range(full_data, indicator, 1)
+    else:
+        index_range[indicator] = sig.calculate_range(full_data, indicator)
+
 #FOR HOVERBOARD
 data_lst = ['County', 'State'] + indicators_lst
 full_data['all_data'] =  full_data['FIPS'] + "<br>" + "County= " + full_data['County'] + "<br>" + "State= " + full_data['State'] 
@@ -77,27 +99,39 @@ for indicator in indicators_lst:
     full_data['all_data'] = full_data['all_data'] + "<br>" + indicator +"= " + full_data_str[indicator]
 
 
-external_stylesheets = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
-
 app = dash.Dash(__name__, external_stylesheets= external_stylesheets, 
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 
+server = app.server
+
+cache = Cache(server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': 'cache-directory'
+})
+
+TIMEOUT = 60
+@cache.memoize(timeout=TIMEOUT)
+
+def give_locations():
+    import json
+    with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+        counties = json.load(response)
+    return counties
+
 #LAYOUT
-horizontal_charts = html.Div(children= [bar.bar_chart, side.side_chart], style={'display': 'flex'})
+horizontal_charts = html.Div(children= [bar.bar_chart, side.side_chart], style={'display': 'flex', 'maxHeight':'30%'})
 
 app.layout = html.Div(id= 'big-screen', children=[
     nav.nav_bar,
+    legend.color_scale,
     filters.choose_filters,
+    intro.instruction_pullouttab,
     multimap.map_plus_sidebox,
     horizontal_charts,
-    intro.instruction_pullouttab,
     dcc.Store(id='chosen-indicators', data=[]),
     dcc.Store(id= 'chosen-data', data= []),
-    legend.color_scale,
-    # dji.Import(src="/assets/intro_autocollapse.js")
     ],
-    style={'height':'100%', 'width': '100%'}) #'overflow':'hidden'})# 'margin':{"r":0,"t":20,"l":0,"b":0}})
-# app.layout += html.Article(dji.Import(src="/assets/intro_autocollapse.js"))
+    style={'height':'100%', 'width': '100%'}) 
 
 #CALLBACKS
 @app.callback(
@@ -125,10 +159,7 @@ def sort_top10(state):
         'font': {
         'color': bar.colors_chart['gray']
         },
-                #'width': "50%",
-                #'height': '30%',
                 'margin': {'t':0,'l':30, 'r':0, 'b':30 }
-                #'margin':{'t':0, 'b':0 }
                 }
                 }
 
@@ -146,30 +177,30 @@ def change_cty_options(state):
         return [{'label': str(dff.iloc[i]['County + State']), 'value' : str(dff.iloc[i]['County + State'])}  for i in range(dff.shape[0])]
         
 
-@app.callback(
-    Output('chosen-data','data'),
-    [Input('choose-state','value'), 
-    Input('choose-county', 'value')])
+# @app.callback(
+#     Output('chosen-data','data'),
+#     [Input('choose-state','value'), 
+#     Input('choose-county', 'value')])
 
 def define_data(state, counties):
     if state == "United States":
         if len(counties) == 0:
-            return full_data.to_dict('list') 
+            return full_data 
         elif len(counties) != 0:
             dff = pd.DataFrame(columns=full_data.columns)
             for cty in counties:
                 cty_df = full_data[full_data['County + State'] == cty]
                 dff = pd.concat([dff, cty_df], join='outer')
-            return dff.to_dict('list')
+            return dff
     else:
         if len(counties) == 0:
-            return full_data[full_data['State']==state].to_dict('list')
+            return full_data[full_data['State']==state]
         elif len(counties) != 0:
             dff2 = pd.DataFrame(columns=full_data.columns)
             for cty in counties:
                 cty_df = full_data[full_data['County + State'] == cty]
                 dff2 = pd.concat([dff2, cty_df], join='outer')
-            return dff2.to_dict('list')
+            return dff2
 
 @app.callback(
     [Output('indicators-shown', 'children'), 
@@ -185,47 +216,40 @@ def show_indicators(score1, score2, score3, metrics1, metrics2, metrics3):
 
 @app.callback(
     Output('counties-map', 'figure'),
-    #Output('show-time', 'children')],
-    [Input('chosen-data', 'data'), 
+    [Input('choose-state', 'value'),
+    Input('choose-county', 'value'), 
     Input('chosen-indicators', 'data')])
 
-def update_map(chosen_data, chosen_indicator):
-    #if chosen_state != None:
-    #if chosen_state == "United States":
+def update_map(state, chosen_counties, chosen_indicator):
     already_shown = []
+    chosen_data = define_data(state, chosen_counties)
     if len(chosen_indicator) != 0:
-            #if chosen_state == "United States":\
         already_shown.append(chosen_indicator[0])
         fig = px.choropleth_mapbox(chosen_data, 
-            geojson=counties, locations=chosen_data['FIPS'], 
+            geojson=give_locations(), locations=chosen_data['FIPS'], 
             color=chosen_indicator[0],
             color_continuous_scale=multimap.colors_map[chosen_indicator[0]],
-            range_color=multimap.index_range[chosen_indicator[0]],
+            range_color=index_range[chosen_indicator[0]],
             mapbox_style="carto-positron",              
             zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
             opacity=0.8,
             labels={chosen_indicator[0]}, hover_data= ['County', 'State'] + indicators_lst,
             )
         fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
-        #fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
         if len(chosen_indicator) > 1:
             for val_indx in range(1, len(chosen_indicator)):
                 if chosen_indicator[val_indx] not in already_shown:
                     already_shown.append(chosen_indicator[val_indx])
-                    fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=counties, locations=chosen_data['FIPS'], z=chosen_data[chosen_indicator[val_indx]],
+                    fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=give_locations(), locations=chosen_data['FIPS'], z=chosen_data[chosen_indicator[val_indx]],
                             colorscale=multimap.colors_map[chosen_indicator[val_indx]],
-                            zmin=multimap.index_range[chosen_indicator[val_indx]][0],
-                            zmax=multimap.index_range[chosen_indicator[val_indx]][1],
-                            marker_line_width=0.1, marker_opacity=0.8, showscale=False, #hovertemplate =  "FIPS=%{data.FIPS}<br>County=%%{data.County}<br>State=%%{data.State}<extra></extra>"))
-                            text= chosen_data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))#, hovertemplate= data_lst ))#, hovertext=[data[y] for y in indicators_lst]))
-                            #hovertemplate=[County: %{data['County']}, State:%{data['State']}] + [y: %{data[y]} for y in indicators_lst]))
+                            zmin=index_range[chosen_indicator[val_indx]][0],
+                            zmax=index_range[chosen_indicator[val_indx]][1],
+                            marker_line_width=0.1, marker_opacity=0.8, showscale=False, 
+                            text= chosen_data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))
                     fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
-                    #fig.update_layout(hover_data= ['County', 'State'] + indicators_lst)
     else:
-        fig = multimap.empty_fig#go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
-            #fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False)
-        #fig.update_trace(hover_data= ['County', 'State'] + indicators_lst)
-        #geojson=counties, locations=data.FIPS, hover_data= ['County', 'State'] + indicators_lst))
+        fig = go.Figure(go.Choroplethmapbox(geojson=give_locations(), locations=data.FIPS))
+        fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False, margin={"r":0,"t":0,"l":0,"b":0}, height=None)
     return fig
 
 @app.callback(
@@ -246,7 +270,6 @@ def make_50_df(datamap, i):
     merged_f=datamap[['County','State', criteria[i]]]
     sorted_cases = merged_f.sort_values(by=[criteria[i]], ascending= False)
     top_50 = sorted_cases.head(50)
-    #full_datasets50[criteria[i]]= top_50
     return top_50
 
 @app.callback(
@@ -258,18 +281,17 @@ def make_50_df(datamap, i):
 def click_button(previous, next, score_lst):
     ctx = dash.callback_context
     if not ctx.triggered:
-        return score_lst#, criteria[score_lst[0]]
+        return score_lst
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        # print(button_id)
         if button_id == "prev-score":
             prev = score_lst.pop(-1)
             score_lst.insert(0, prev)
-            return score_lst#, criteria[score_lst[0]]
+            return score_lst
         if button_id == 'next-score':
             nex = score_lst.pop(0)
             score_lst.append(nex)
-            return score_lst#, criteria[score_lst[0]]
+            return score_lst
 
 @app.callback(
     Output('total-ctys', 'data'),
@@ -284,13 +306,11 @@ def determine_total_top(state, score_i):
         score_indx = score_i[0]
         score = criteria[score_indx]
         datasets50 = make_50_df(full_data[full_data['State'] == state], score_indx)
-        #df = full_datasets50[score]
         total_cty = len(datasets50)
     return total_cty
 
 @app.callback(
     Output('index-county', 'data'),
-    #Output('count-county', 'children')],
     [Input('prev-county', 'n_clicks'), 
     Input('next-county', 'n_clicks'), 
     Input('choose-state', 'value')],
@@ -300,10 +320,8 @@ def determine_total_top(state, score_i):
 
 def click_county(prev, next, state, total_cty, num):
     ctx = dash.callback_context
-    # dif = total_cty - num
-    #num = total_cty - dif
     if not ctx.triggered:
-        return num  #, '{} of 50'.format(num) 
+        return num  
     else:
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
         if button_id == 'choose-state':
@@ -313,24 +331,12 @@ def click_county(prev, next, state, total_cty, num):
                 num = total_cty - 1
             else:
                 num = num - 1 
-            #return num
         elif button_id == 'next-county':
             if num == total_cty - 1:
                 num = 0
             else:
                 num = num + 1
-        # print(num)
-        # ctx_msg = json.dumps({
-        #     'states': ctx.states,
-        #     'triggered': ctx.triggered,
-        #     'inputs': ctx.inputs
-        # }, indent=2)
-
-        return num #, '{} of 50'.format(num)        
-
-
-# print(full_data.shape[0])
-# print(full_data)
+        return num        
 
 text_colors = ['#ff385e', '#0c3f47', '#ffc05f']
 
@@ -406,14 +412,11 @@ def change_icon(n0, is_open0):
 
 
 @app.callback(
-    #list([Output(f"checkbox-{i}", "className")for i in range(3)] + 
-    Output("score-1-toggle", "className"), #+ [Output(f"checkbox-{i}", "className") for i in range(3)] + [Output(f"arrow-{i}", "className") for i in range(3)] ,
+    Output("score-1-toggle", "className"),
     [Input("score-1-toggle", "n_clicks")],
     [State("collapse-1", "is_open")])
 
 def change_icon(n0, is_open0): 
-    # if is_open0 == 'collapse':
-    #     return "fa fa-caret-right"
     caret_list = {True: "fa fa-caret-down", False: "fa fa-caret-right"}
     if n0 == None:
         return "fa fa-caret-right"
@@ -425,14 +428,11 @@ def change_icon(n0, is_open0):
         return "fa fa-caret-down"
     
 @app.callback(
-    #list([Output(f"checkbox-{i}", "className")for i in range(3)] + 
-    Output("score-2-toggle", "className"), #+ [Output(f"checkbox-{i}", "className") for i in range(3)] + [Output(f"arrow-{i}", "className") for i in range(3)] ,
+    Output("score-2-toggle", "className"), 
     [Input("score-2-toggle", "n_clicks")],
     [State("collapse-2", "is_open")])
 
 def change_icon(n0, is_open0): 
-    # if is_open0 == 'collapse':
-    #     return "fa fa-caret-right"
     caret_list = {True: "fa fa-caret-down", False: "fa fa-caret-right"}
     if n0 == None:
         return "fa fa-caret-right"
@@ -455,6 +455,6 @@ def toggle_classname(n, classname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(host='127.0.0.1', port=8080, debug=True)
 
 

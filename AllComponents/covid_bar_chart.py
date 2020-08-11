@@ -3,12 +3,8 @@ import pandas as pd
 import dash_core_components as dcc
 import dash_html_components as html
 
-#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
-#app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
 
-#define colors
 colors_chart = {
     'header': 'c0c0c0',
     'text': '#7FDBFF',
@@ -18,7 +14,6 @@ colors_chart = {
 }
 
 def sort_top_num(df, crit, num):
-    #df_ = df.drop(columns=dropped)
     sorted_df = df.sort_values(by=crit, ascending= False)
     top_num_int = sorted_df.head(num)
     top_num = top_num_int.applymap(str)
@@ -51,16 +46,9 @@ bar_chart = html.Div(children=[
         'font': {
         'color': colors_chart['gray']
         },
-                #'width': "50%",
-                #'height': '30%',
                 'margin': {'t':0,'l':30, 'r':0, 'b':30 }
-                #'margin':{'t':0, 'b':0 }
                 }
                 }
                 , style= {'height': '95%', 'width': "95%", 'margin-top': 0, 'float':'left', 'display':'inline-block'}
                 ),
-                #last_updated_indicator
                 ], style = {'display':'grid', 'width': "79%", 'margin': '5px'})
-
-# if __name__ == '__main__':
-#     app.run_server(debug=True)

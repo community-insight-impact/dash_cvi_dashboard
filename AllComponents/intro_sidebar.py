@@ -1,8 +1,5 @@
 import dash
-import dash_bootstrap_components as dbc
-import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
 
 
 sidebar_header = html.Div(
@@ -18,10 +15,6 @@ sidebar_header = html.Div(
                     id="sidebar-toggle"
                 ),
             ],
-          
-            # width=3,
-            # vertically align the toggle in the center
-            # align="center",
         ),
     ]
 )
@@ -39,36 +32,8 @@ sidebar = html.Div(
                 style = {'fontSize': '16px'})], style={'width': '100%', 'overflowY': 'scroll'})],
             id="blurb", #temporary name
         style={'width': '100%', 'overflowY': 'scroll'}),
-        #use the Collapse component to animate hiding / revealing introduction
-        # dbc.Collapse(
-        #     dbc.Card(dbc.CardBody()),
-        #     id="collapse", 
-        # ),
     ],
     id="sidebar",
 )
 
 instruction_pullouttab= html.Div([sidebar], style = {'zIndex':100})
-
-# app = dash.Dash(
-#     external_stylesheets=[dbc.themes.BOOTSTRAP],
-#     # these meta_tags ensure content is scaled correctly on different devices
-#     # see: https://www.w3schools.com/css/css_rwd_viewport.asp for more
-#     meta_tags=[
-#         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-#     ],
-# )
-
-
-# @app.callback(
-#     Output("sidebar", "className"),
-#     [Input("sidebar-toggle", "n_clicks")],
-#     [State("sidebar", "className")],
-# )
-# def toggle_classname(n, classname):
-#     if n and classname == "":
-#         return "collapsed"
-#     return ""
-
-# if __name__ == "__main__":
-#     app.run_server(port=8888, debug=True)
