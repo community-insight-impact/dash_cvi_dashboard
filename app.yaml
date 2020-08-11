@@ -1,7 +1,7 @@
 service: default
 runtime: python37
 
-#instance_class: B4_HIGHMEM
+instance_class: B4_HIGHMEM
 
 basic_scaling:
     max_instances: 2
