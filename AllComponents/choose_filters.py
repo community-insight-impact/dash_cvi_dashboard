@@ -1,7 +1,6 @@
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
 import pandas as pd
+import dash_html_components as html
+import dash_core_components as dcc
 
 #LIST OF ALL STATES
 data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
@@ -15,7 +14,6 @@ big_i = data.shape[0]
 for each_i in range(big_i):
     cty= str(data.iloc[each_i]['County'] + ", " + data.iloc[each_i]['State'])
     all_counties.append(cty)
-#print(all_counties)
 data['County + State'] = all_counties
 
 #FULL DATAFRAME
