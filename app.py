@@ -1,12 +1,6 @@
 import pandas as pd
 pd.set_option('display.max_columns', None)
 from urllib.request import urlopen
-<<<<<<< HEAD:app.py
-import json
-with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-    counties = json.load(response)
-=======
->>>>>>> 39761d85f19de5463fdb9dbb6f26965f3cca374d:main.py
 import plotly.express as px
 import plotly.graph_objects as go
 import dash
@@ -14,11 +8,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import flask
+import os
 import dash_bootstrap_components as dbc
-<<<<<<< HEAD:app.py
-=======
 from dash.exceptions import PreventUpdate
->>>>>>> 39761d85f19de5463fdb9dbb6f26965f3cca374d:main.py
 from AllComponents import sigma_calculation as sig
 from AllComponents import choose_filters as filters
 from AllComponents import covid_bar_chart as bar
