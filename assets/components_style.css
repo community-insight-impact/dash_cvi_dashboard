@@ -1,0 +1,17 @@
+#top10-graph {
+	height: 95%;
+	width: 95%;
+	margin-top:13px;
+	float: left; 
+	display: inline-block;
+	overflow-y: scroll;
+}
+
+#indicators-shown {
+	font-size: 15px;
+	/*margin-bottom: 0px;*/
+}
+
+#indicators-box p {
+	margin-bottom:2px;
+}

@@ -49,6 +49,6 @@ bar_chart = html.Div(children=[
                 'margin': {'t':0,'l':30, 'r':0, 'b':30 }
                 }
                 }
-                , style= {'height': '95%', 'width': "95%", 'margin-top': 0, 'float':'left', 'display':'inline-block'}
+                #, style= {'height': '95%', 'width': "95%", 'margin-top': 0, 'float':'left', 'display':'inline-block'}
                 ),
                 ], style = {'display':'grid', 'width': "79%", 'margin': '5px'})

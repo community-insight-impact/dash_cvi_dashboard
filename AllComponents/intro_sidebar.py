@@ -10,7 +10,7 @@ sidebar_header = html.Div(
         html.Div(
             [html.Div(
                     # styled into an 'introduction' pull-out tab
-                    html.Span(className="navbar-toggler-icon", children="Introduction"),
+                    html.Span(className="navbar-toggler-icon", children="How to use"),
                     className="navbar-toggler",
                     id="sidebar-toggle"
                 ),
@@ -25,11 +25,11 @@ sidebar = html.Div(
             html.Div(children= [
                 html.P("This dashboard is part of an open source project designed to effectively understand community needs and allocate resources at the county level.\
                     Use this dashboard to visualize different health and demographic variables at the county level and assess county risk levels based on those variables. Interact with the map by zooming in on a specific area or search for a location by clicking the Magnifying Glass icon in the top right corner of the map. Use the Layers icon (to the right of the Magnifying Glass) to map a metric or an individual variable dataset. \
-                    Click on a county on the map to view COVID-19 and population census data for that county. On the right side of the screen, select a state with the dropdown menu to view county vulnerability scores and rankings within that state.\
+                    Click on a county on the map to view COVID-19 and population census data for that county.) On the right side of the screen, select a state with the dropdown menu to view county vulnerability scores and rankings within that state.\
                     In those modules, use the arrows at the bottom to toggle between the scores for different metrics. \
                     For more information about the project, click the Menu icon in the top right corner. Feel free to reach out to our team with any questions or ideas!",
                 className="lead",
-                style = {'fontSize': '16px'})], style={'width': '100%', 'overflowY': 'scroll'})],
+                style = {'fontSize': '16px'})], style={'width': '100%', 'overflowY': 'scroll', 'height': '1200px'})],
             id="blurb", #temporary name
         style={'width': '100%', 'overflowY': 'scroll'}),
     ],

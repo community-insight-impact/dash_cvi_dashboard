@@ -83,7 +83,7 @@ accordion_box = html.Div([
     html.Div(accordion, style = {'width': '100%', 'overflowY':'scroll'})], #style = {'width': '20%', 'overflowY':'scroll',}
         style={'height':'350px', 'width':'100%', 'overflowY':'scroll', 'border': '5px solid gray', 'margin': 5})#,'overflowY':'hidden'})
 
-indicators_shown = html.Div(children= [html.P(children="Indicators shown:"), html.Div(id='indicators-shown', children= [])], style= {'height':'90px',"overflowY": 'scroll',
+indicators_shown = html.Div(id = "indicators-box", children= [html.P(children="Indicators shown:"), html.Div(id='indicators-shown', children= [])], style= {'height':'90px',"overflowY": 'scroll',
     'border': '5px solid gray', 'margin': '5px', 'padding': '5px', 'width':'100%'})
 
 

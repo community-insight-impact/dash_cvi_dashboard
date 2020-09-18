@@ -48,7 +48,7 @@ for each_i in range(big_i):
     all_counties.append(cty)
 #print(all_counties)
 full_data['County + State'] = all_counties
-
+#print(full_data.head(5))
 
 #SCORES
 criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', 'Need for Mobile Health Resources']
@@ -115,8 +115,7 @@ horizontal_charts = html.Div(children= [bar.bar_chart, side.side_chart], style={
 
 app.layout = html.Div(id= 'big-screen', children=[
     nav.nav_bar,
-    legend.color_scale,
-    filters.choose_filters,
+    html.Div(id='fil colors', children=[filters.choose_filters, legend.color_scale]),
     intro.instruction_pullouttab,
     multimap.map_plus_sidebox,
     horizontal_charts,
@@ -165,7 +164,7 @@ def change_cty_options(state):
     if state == "United States":
         return [{'label': i, 'value': i} for i in all_counties]
     else:
-        dff= data[data['State']== state]
+        dff= full_data[full_data['State'] == state]
         return [{'label': str(dff.iloc[i]['County + State']), 'value' : str(dff.iloc[i]['County + State'])}  for i in range(dff.shape[0])]
         
 
@@ -203,8 +202,12 @@ def define_data(state, counties):
     Input("mobile-indicators", 'value')])
 
 def show_indicators(score1, score2, score3, metrics1, metrics2, metrics3):
+    already_shown = []
     scores = score1 + score2 + score3 + metrics1 + metrics2 + metrics3
-    return " | ".join(score for score in scores if score), scores
+    for score in scores:
+        if score not in already_shown:
+            already_shown.append(score)
+    return " | ".join(score for score in already_shown if score), already_shown
 
 @app.callback(
     Output('counties-map', 'figure'),
@@ -216,7 +219,7 @@ def update_map(state, chosen_counties, chosen_indicator):
     already_shown = []
     chosen_data = define_data(state, chosen_counties)
     if len(chosen_indicator) != 0:
-        already_shown.append(chosen_indicator[0])
+    #    already_shown.append(chosen_indicator[0])
         fig = px.choropleth_mapbox(chosen_data, 
             geojson=give_locations(), locations=chosen_data['FIPS'], 
             color=chosen_indicator[0],
@@ -230,15 +233,15 @@ def update_map(state, chosen_counties, chosen_indicator):
         fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
         if len(chosen_indicator) > 1:
             for val_indx in range(1, len(chosen_indicator)):
-                if chosen_indicator[val_indx] not in already_shown:
-                    already_shown.append(chosen_indicator[val_indx])
-                    fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=give_locations(), locations=chosen_data['FIPS'], z=chosen_data[chosen_indicator[val_indx]],
+        #        if chosen_indicator[val_indx] not in already_shown:
+       #             already_shown.append(chosen_indicator[val_indx])
+                fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=give_locations(), locations=chosen_data['FIPS'], z=chosen_data[chosen_indicator[val_indx]],
                             colorscale=multimap.colors_map[chosen_indicator[val_indx]],
                             zmin=index_range[chosen_indicator[val_indx]][0],
                             zmax=index_range[chosen_indicator[val_indx]][1],
                             marker_line_width=0.1, marker_opacity=0.8, showscale=False, 
                             text= chosen_data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))
-                    fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
+                fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
     else:
         fig = go.Figure(go.Choroplethmapbox(geojson=give_locations(), locations=data.FIPS))
         fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False, margin={"r":0,"t":0,"l":0,"b":0}, height=None)
@@ -250,7 +253,10 @@ def update_map(state, chosen_counties, chosen_indicator):
 
 def make_image(indicators):
     scales =[]
+    #already_shown = []
     for indicator in indicators:
+        #if indicator not in already_shown:
+        #already_shown.append(indicator)
         cscale = legend.make_legend(indicators_lst.index(indicator))
         scales.append(cscale)
     return scales
@@ -354,9 +360,9 @@ def chart_display(cty_indx, score_i, state, total_cty):
     #çdf = full_datasets50[score]
     
     return [
-        html.Div(html.H4(children=score, style={'textAlign':'center','fontSize':18, 'marginBottom':0, 'position':'static', 'textOverflow':'ellipsis', 'overflow':'hidden', 'color': text_colors[score_indx]})),
-        html.H4('County Score',style={'textAlign':'center', 'fontSize': 18, 'marginBottom': 5, 'position':'static'}),
-        html.H4(str(round(df.iloc[cty_indx][score],2)), style= { 'fontWeight': 'bold', 'textAlign':'center', 'marginBottom': 5}),
+        html.Div(html.H4(children=score, style={'textAlign':'center','fontSize':19, 'marginBottom':0, 'marginTop':0, 'position':'static', 'textOverflow':'ellipsis', 'overflow':'hidden', 'color': text_colors[score_indx]})),
+        html.H4('County Score',style={'textAlign':'center', 'fontSize': 18, 'marginBottom': 0, 'position':'static'}),
+        html.H4(str(round(df.iloc[cty_indx][score],2)), style= { 'fontWeight': 'bold', 'textAlign':'center', 'marginBottom': 0}),
         html.H5(children= str(df.iloc[cty_indx]['County'] + ", " + df.iloc[cty_indx]['State']), 
         style = {'textAlign':'center', 'fontSize': 19, 'position':'static'})#'margin-bottom': 50,
         ], score, {'textAlign':'center', 'display':'inline-block', 'font-size': '12px', 'textOverflow':'ellipsis', 'color': text_colors[score_indx]}, '{} of {}'.format(cty_indx + 1, total_cty)
