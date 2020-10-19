@@ -10,7 +10,7 @@ sidebar_header = html.Div(
         html.Div(
             [html.Div(
                     # styled into an 'introduction' pull-out tab
-                    html.Span(className="navbar-toggler-icon", children="How to use"),
+                    html.Span(className="navbar-toggler-icon", children="Instructions"),
                     className="navbar-toggler",
                     id="sidebar-toggle"
                 ),

@@ -168,11 +168,6 @@ def change_cty_options(state):
         return [{'label': str(dff.iloc[i]['County + State']), 'value' : str(dff.iloc[i]['County + State'])}  for i in range(dff.shape[0])]
         
 
-# @app.callback(
-#     Output('chosen-data','data'),
-#     [Input('choose-state','value'), 
-#     Input('choose-county', 'value')])
-
 def define_data(state, counties):
     if state == "United States":
         if len(counties) == 0:

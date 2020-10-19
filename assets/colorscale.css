@@ -2,7 +2,7 @@
 	position: absolute;
 	z-index: 1;
 	/*top: 5px;*/
-	margin-top: 10px;
+	margin-top: 15px;
 	right: 92.25%;
 	float: right;
 	width: 100px;
@@ -12,13 +12,33 @@
 }
 
 #point-down{
-	position:sticky;
-	float:right;
-	z-index: 27
-	bottom:3.5%;
-	margin-right:5px;
+	position:absolute;
+	/*float:right;*/
+	z-index: 1000000000;
+	/*bottom:3.5%;*/
+	top:460px;
+	/*right:300px;*/
+	/*left:80px;*/
+	right: 86%;
+	margin-right:10px;
 	/*margin-bottom: 5px;*/
 	/*poszition:static;*/
-	/*width: 100%;
-	height:50%;*/
+	width: 100px;
+	font-size:20px;
+	/*height:50%;*/
 }
+
+/*#colors{
+	margin-left:5px;
+	margin-top: 10px;
+}*/
+
+#legs{
+	/*margin-top: 10px*/
+	margin-left: 4px;
+	margin-bottom: 5px;
+}
+
+/*#colors{
+/*	margin-top:20px;
+}*/
