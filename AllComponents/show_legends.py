@@ -9,6 +9,6 @@ def make_legend(index):
 	return html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()))
 
 color_scale = html.Div(children= [html.Div(className= 'legend',children=[html.P(id = "legs", children = "Legends:"),
-	html.Div(id ='color-scales', children = [])]), 
-	html.I(id='point-down', className="fa fa-angle-down", **{'aria-hidden': 'true'})])
+	html.Div([html.Div(id ='color-scales', children = []), 
+	html.I(id='point-down', className="fa fa-angle-down", **{'aria-hidden': 'true'})])])])
 
