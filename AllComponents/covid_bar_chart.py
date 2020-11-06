@@ -5,6 +5,8 @@ import dash_html_components as html
 
 data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
 
+#CODE FOR THE COVID CASES BAR CHART
+
 colors_chart = {
     'header': 'c0c0c0',
     'text': '#7FDBFF',

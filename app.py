@@ -11,17 +11,16 @@ import flask
 #import os
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
-from AllComponents import sigma_calculation as sig
-from AllComponents import choose_filters as filters
-from AllComponents import covid_bar_chart as bar
-from AllComponents import intro_sidebar as intro
-from AllComponents import last_updated as updated 
-from AllComponents import multimap_plotly as multimap 
-from AllComponents import nav_bar as nav 
-from AllComponents import side_chart as side
-from AllComponents import show_legends as legend
+from AllComponents import sigma_calculation
+from AllComponents import choose_filters
+from AllComponents import covid_bar_chart
+from AllComponents import intro_sidebar
+from AllComponents import last_updated
+from AllComponents import multimap_plotly
+from AllComponents import nav_bar 
+from AllComponents import side_chart 
+from AllComponents import show_legends
 from flask_caching import Cache
-from AllComponents import sigma_calculation as sig
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -80,9 +79,9 @@ indicators_lst = ['Severe COVID Case Complications',
 index_range = {}
 for indicator in indicators_lst:
     if indicator == 'Income Ratio' or indicator == '% 65 and over' or indicator == '% Unemployed':
-        index_range[indicator] = sig.calculate_range(full_data, indicator, 1)
+        index_range[indicator] = sigma_calculation.calculate_range(full_data, indicator, 1)
     else:
-        index_range[indicator] = sig.calculate_range(full_data, indicator)
+        index_range[indicator] = sigma_calculation.calculate_range(full_data, indicator)
 
 #FOR HOVERBOARD
 data_lst = ['County', 'State'] + indicators_lst
@@ -111,13 +110,13 @@ def give_locations():
     return counties
 
 #LAYOUT
-horizontal_charts = html.Div(children= [bar.bar_chart, side.side_chart], style={'display': 'flex', 'maxHeight':'30%'})
+horizontal_charts = html.Div(children= [covid_bar_chart.bar_chart, side_chart.side_chart], style={'display': 'flex', 'maxHeight':'30%'})
 
 app.layout = html.Div(id= 'big-screen', children=[
-    nav.nav_bar,
-    html.Div(id='fil colors', children=[filters.choose_filters, legend.color_scale]),
-    intro.instruction_pullouttab,
-    multimap.map_plus_sidebox,
+    nav_bar.nav_bar,
+    html.Div(id='fil colors', children=[choose_filters.choose_filters, show_legends.color_scale]),
+    intro_sidebar.instruction_pullouttab,
+    multimap_plotly.map_plus_sidebox,
     horizontal_charts,
     dcc.Store(id='chosen-indicators', data=[]),
     dcc.Store(id= 'chosen-data', data= []),
@@ -134,21 +133,21 @@ def sort_top10(state):
         df = data
     else:           
         df = data[data['State'] == state]
-    top_10_i = bar.sort_top_num(df, 'covid_cases', 10)
+    top_10_i = covid_bar_chart.sort_top_num(df, 'covid_cases', 10)
     top_10_i["covid"] = 'FIPS=' + top_10_i.loc[:,'FIPS'] + "<br>" + "County= " + top_10_i.loc[:,'County'] + "<br>" + "State= " + top_10_i.loc[:, 'State'] + "<br>"+ "Number of Covid cases=" + top_10_i.loc[:, 'covid_cases']
     return {
         'data' : [
         {'x': list(top_10_i.County), 
         'y': list(top_10_i.covid_cases), 
         'text': list(top_10_i["covid"]), 
-        'type': 'bar', 'name': 'Cases', 'marker': {'color': bar.colors_chart["header"]}
+        'type': 'bar', 'name': 'Cases', 'marker': {'color': covid_bar_chart.colors_chart["header"]}
         }],
         'layout': {
-        "plot_bgcolor": bar.colors_chart["gray"],
-        "paper_bgcolor": bar.colors_chart["header"],
-        'color': bar.colors_chart["text"],
+        "plot_bgcolor": covid_bar_chart.colors_chart["gray"],
+        "paper_bgcolor": covid_bar_chart.colors_chart["header"],
+        'color': covid_bar_chart.colors_chart["text"],
         'font': {
-        'color': bar.colors_chart['gray']
+        'color': covid_bar_chart.colors_chart['gray']
         },
                 'margin': {'t':0,'l':30, 'r':0, 'b':30 }
                 }
@@ -218,7 +217,7 @@ def update_map(state, chosen_counties, chosen_indicator):
         fig = px.choropleth_mapbox(chosen_data, 
             geojson=give_locations(), locations=chosen_data['FIPS'], 
             color=chosen_indicator[0],
-            color_continuous_scale=multimap.colors_map[chosen_indicator[0]],
+            color_continuous_scale=multimap_plotly.colors_map[chosen_indicator[0]],
             range_color=index_range[chosen_indicator[0]],
             mapbox_style="carto-positron",              
             zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
@@ -231,7 +230,7 @@ def update_map(state, chosen_counties, chosen_indicator):
         #        if chosen_indicator[val_indx] not in already_shown:
        #             already_shown.append(chosen_indicator[val_indx])
                 fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=give_locations(), locations=chosen_data['FIPS'], z=chosen_data[chosen_indicator[val_indx]],
-                            colorscale=multimap.colors_map[chosen_indicator[val_indx]],
+                            colorscale=multimap_plotly.colors_map[chosen_indicator[val_indx]],
                             zmin=index_range[chosen_indicator[val_indx]][0],
                             zmax=index_range[chosen_indicator[val_indx]][1],
                             marker_line_width=0.1, marker_opacity=0.8, showscale=False, 
@@ -252,7 +251,7 @@ def make_image(indicators):
     for indicator in indicators:
         #if indicator not in already_shown:
         #already_shown.append(indicator)
-        cscale = legend.make_legend(indicators_lst.index(indicator))
+        cscale = show_legends.make_legend(indicators_lst.index(indicator))
         scales.append(cscale)
     return scales
 

@@ -1,4 +1,5 @@
 # .gitignore
 
 App*Visualization/*
-#AllComponents/__pycache__/*
+AllComponents/__pycache__/*
+__pycache__/*

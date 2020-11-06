@@ -7,7 +7,7 @@ accordion_text_colors = ['#ff385e', '#0c3f47', '#ffc05f']
 
 criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', 'Need for Mobile Health Resources']
 
-#CONTENTS
+#CONTENTS OF ACCORDION 
 item0 = html.Div([
     html.P('Describes likelihood that constituents within a community will develop severe complications following covid-19 infection', style = {'margin-bottom': 20}),
     html.P('Includes:'),
@@ -24,8 +24,7 @@ item0 = html.Div([
 item1 = html.Div([
     html.P('Describes existing need for food-based community efforts, services, and nonprofits', style={'margin-bottom': 20}),
     html.P('Includes:'),
-    dcc.Checklist(id="economic-indicators", options=[ #{'label': 'Number of COVID cases', 'value': 'covid_cases'},
-        #{'label': 'Risk of Severe Economic Harm', 'value': 'Risk of Severe Economic Harm'},
+    dcc.Checklist(id="economic-indicators", options=[ 
         {'label': '% Uninsured', 'value': '% Uninsured'},
         {'label': '% Children in Poverty', 'value': '% Children in Poverty'},
         {'label': 'Income Ratio', 'value': 'Income Ratio'},
@@ -65,7 +64,7 @@ def make_item(i):
                         dcc.Checklist(id= f"checkbox-{i}", options= [{'label': criteria[i], 'value': criteria[i]}], 
                             inputStyle = {'display': 'inline-block', 'marginRight':'5px'},  labelStyle= {'marginBottom':'5px','fontSize':'14px', 'display': 'inline-block', 'color': accordion_text_colors[i]}, 
                             value=[]),
-                        html.I(id=f"score-{i}-toggle", className="fa fa-caret-right", **{'aria-hidden': 'true'}, style= {'fontSize': '15px', 'display':'inline-block', 'position': 'relative', 'float':'right', 'marginTop':'-23px'  #'right': 5  #'bottom': 5 #right':30, 'bottom': 0
+                        html.I(id=f"score-{i}-toggle", className="fa fa-caret-right", **{'aria-hidden': 'true'}, style= {'fontSize': '15px', 'display':'inline-block', 'position': 'relative', 'float':'right', 'marginTop':'-23px'
                         })],
                   style= {'verticalAlign':'middle', }), 
             style={'height':'30%'}),
@@ -80,8 +79,8 @@ accordion = html.Div([make_item(0), make_item(1), make_item(2)], className="acco
 
 accordion_box = html.Div([
     html.Label('Select a Metric:', style={'verticalAlign':'middle', 'padding': 10}), 
-    html.Div(accordion, style = {'width': '100%', 'overflowY':'scroll'})], #style = {'width': '20%', 'overflowY':'scroll',}
-        style={'height':'350px', 'width':'100%', 'overflowY':'scroll', 'border': '5px solid gray', 'margin': 5})#,'overflowY':'hidden'})
+    html.Div(accordion, style = {'width': '100%', 'overflowY':'scroll'})],
+        style={'height':'350px', 'width':'100%', 'overflowY':'scroll', 'border': '5px solid gray', 'margin': 5})
 
 indicators_shown = html.Div(id = "indicators-box", children= [html.P(children="Indicators shown:"), html.Div(id='indicators-shown', children= [])], style= {'height':'90px',"overflowY": 'scroll',
     'border': '5px solid gray', 'margin': '5px', 'padding': '5px', 'width':'100%'})

@@ -3,6 +3,8 @@ import dash_html_components as html
 from AllComponents import dropdown_menu as menu
 #from AllComponents import sigma_calculation as sig
 
+
+#ALL METRICS
 colors_map = {'Severe COVID Case Complications': ['#fdc1f6', '#ff385e'], 'covid_cases': ['#bdb4fe', '#0d0c54'],
  'Years of Potential Life Lost Rate': ['#bdb4fe', '#0d0c54'], '% Fair or Poor Health': ['#bdb4fe', '#0d0c54'],
 '% Smokers': ['#bdb4fe', '#0d0c54'],
@@ -24,11 +26,11 @@ colors_map = {'Severe COVID Case Complications': ['#fdc1f6', '#ff385e'], 'covid_
 'Need for Mobile Health Resources':['#ffc05f', '#d81405']
 }
 
-
-map_plus_sidebox = html.Div(id = 'map plus legends', children=
-    [html.Div(dcc.Loading(id= 'loading-1',children= [html.Div(dcc.Graph(id='counties-map', #figure= empty_fig
+#style is the same format as HTML/CSS
+map_plus_sidebox = html.Div(id = 'map-legends', children=
+    [html.Div(id = "inner-map", children = dcc.Loading(id= 'loading-1',children= [html.Div(dcc.Graph(id='counties-map', #figure= empty_fig
         ))], type='default'),
-                style= {'width': "79%", 'height':'100%', 'display':'inline-block', 'marginLeft': '5px', 'marginTop': '5px'}),
+        style= {'width': "79%", 'height':'100%', 'display':'inline-block', 'marginLeft': '5px', 'marginTop': '5px'}),
 
     html.Div(children=[menu.accordion_box, menu.indicators_shown], style = {'width': '20%'})],
             style= {'width':'100%', 'height':'50%', 'display':'flex', 'zIndex': -2})

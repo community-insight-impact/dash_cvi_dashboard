@@ -1,5 +1,6 @@
 import dash_html_components as html
 
+#Navigation Bar at the right corner of the dashboard
 nav_bar = html.Div(
     [
     html.Div(className='navbar', 
