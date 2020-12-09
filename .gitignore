@@ -3,3 +3,7 @@
 App*Visualization/*
 AllComponents/__pycache__/*
 __pycache__/*
+AllComponents/multimap_for_debugging.py
+AllComponents/possible_new_map
+AllComponents/possible_new_map.py
+cache-directory

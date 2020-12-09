@@ -12,12 +12,13 @@ item0 = html.Div([
     html.P('Describes likelihood that constituents within a community will develop severe complications following covid-19 infection', style = {'margin-bottom': 20}),
     html.P('Includes:'),
     dcc.Checklist(id="severe-indicators", options=[ {'label': 'Number of COVID cases', 'value': 'covid_cases'},
-        {'label': '% 65 and over', 'value': '% 65 and over'},
+        {'label': '% Adults 65 and Older', 'value': '% Adults 65 and Older'},
         {'label': '% Adults with Obesity', 'value': '% Adults with Obesity'},
-        {'label': '% Adults with Diabetes', 'value': '% Adults with Diabetes'},
+        {'label': '% Diagnosed Diabetes', 'value': '% Diagnosed Diabetes'},
         {'label': '% Smokers', 'value': '% Smokers'},
-        {'label': 'Years of Potential Life Lost Rate', 'value': 'Years of Potential Life Lost Rate'},
-        {'label': '% Fair or Poor Health', 'value': '% Fair or Poor Health'}], value=[], inputClassName= "fa fa-square-o")
+        {'label': 'Heart Disease Death Rate', 'value': 'Heart Disease Death Rate'},
+        {'label': 'Hypertension Death Rate', 'value': 'Hypertension Death Rate'},
+        {'label': 'COPD Mortality Rate', 'value': 'COPD Mortality Rate'}], value=[], inputClassName= "fa fa-square-o")
         ]#, style={'display': 'grid'}
         )
 
@@ -34,22 +35,26 @@ item1 = html.Div([
         {'label': '% Enrolled in Free or Reduced Lunch', 'value': '% Enrolled in Free or Reduced Lunch'},
         {'label': '% Unemployed', 'value': '% Unemployed'},
         {'label': 'High School Graduation Rate', 'value': 'High School Graduation Rate'},
-        {'label': 'Number of Covid Cases', 'value': 'covid_cases'}], value=[], inputClassName= "fa fa-square-o")
+        ], value=[], inputClassName= "fa fa-square-o")
     ])
 
 item2 = html.Div([
     html.P('Describes the likelihood that a community could benefit from mobile health services', style={'margin-bottom': 20}),
     html.P('Includes:'),
-    dcc.Checklist(id="mobile-indicators", options=[ #{'label': 'Number of COVID cases', 'value': 'covid_cases'},
-        #{'label': 'Risk of Severe Economic Harm', 'value': 'Risk of Severe Economic Harm'},
-        {'label': '% Uninsured', 'value': '% Uninsured'},
+    dcc.Checklist(id="mobile-indicators", options=[
+        {'label': '% Rural', 'value': '% Rural'},
         {'label': '% 65 and over', 'value': '% 65 and over'},
-        {'label': '% Adults with Obesity', 'value': '% Adults with Obesity'},
-        {'label': '% Adults with Diabetes', 'value': '% Adults with Diabetes'},
-        {'label': '% Smokers', 'value': '% Smokers'},
+        {'label': '% Households without a Car', 'value': '% households wo car'},
+        {'label': '% Without Health Insurance', 'value': '% Without Health Insurance'},
         {'label': 'Primary Care Physicians Rate', 'value': 'Primary Care Physicians Rate'},
         {'label': '% Fair or Poor Health', 'value': '% Fair or Poor Health'},
-        {'label': '% Home Internet Access', 'value': '% Home Internet Access'}], value=[], inputClassName= "fa fa-square-o")
+        {'label': '% Nonwhite', 'value': '% Nonwhite'},
+        {'label': '% Limited English Proficiency', 'value': '% Limited English Proficiency'},
+        {'label': '% Veterans in Civilian Adult Population', 'value': '% Veterans in Civilian Adult Population'},
+        {'label': '% disabled', 'value': '% disabled'},
+        {'label': 'opioid death rate', 'value': 'opioid death rate'},
+        {'label': 'Number of Hospitals', 'value': 'Number of Hospitals'}
+        ], value=[], inputClassName= "fa fa-square-o")
     ])
 
 graph_info =[item0, item1, item2]

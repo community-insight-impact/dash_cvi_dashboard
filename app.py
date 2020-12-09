@@ -4,6 +4,7 @@ from urllib.request import urlopen
 import plotly.express as px
 import plotly.graph_objects as go
 import dash
+import json
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
@@ -21,6 +22,8 @@ from AllComponents import nav_bar
 from AllComponents import side_chart 
 from AllComponents import show_legends
 from flask_caching import Cache
+with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+    counties = json.load(response)
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -30,84 +33,122 @@ external_stylesheets = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/b
 data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
 data_str = data.applymap(str)
 data2 = pd.read_csv("data/economic_score_data.csv", dtype={'FIPS': str})
+# print(data2)
 data3 = pd.read_csv("data/mobile_health_score_data.csv", dtype={'FIPS': str})
 #    return data.merge(data2, how='outer').merge(data3, how='outer')
 
 #data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
 
 #FULL DATAFRAME
-full_data = data.merge(data2, how='outer').merge(data3, how='outer')
-full_data_str = full_data.applymap(str)
+    #'outer'
+full_data = data.merge(data2, how='outer', left_on = ["FIPS", "State", "County"], right_on =["FIPS", "State", "County"] )
+full_data = full_data.merge(data3,how= 'outer', left_on = ["FIPS", "State", "County", "% Adults 65 and Older"], right_on = ["FIPS", "State", "County", "% Adults 65 and Older"])
+full_data.round(2)
+# data.merge(data2, how=
+#     'left', on = 'County').merge(data3, how=
+#     'left', on = 'County')
+# print(full_data[full_data['State'] == "Texas"])
+
+# full_data = pd.concat([data, data2, data3]).drop_duplicates()
+#print(full_data_str.iloc[185])
 
 #Add county +state name
 all_counties = []
-big_i = data.shape[0]
+big_i = full_data.shape[0]
 for each_i in range(big_i):
-    cty= str(full_data.iloc[each_i]['County'] + ", " + full_data.iloc[each_i]['State'])
-    all_counties.append(cty)
+    if str(full_data.iloc[each_i]['County']) != 'nan':
+        cty= str(full_data.iloc[each_i]['County'] + ", " + full_data.iloc[each_i]['State'])
+        all_counties.append(cty)
+    else:
+        all_counties.append('nan, nan')
 #print(all_counties)
 full_data['County + State'] = all_counties
-#print(full_data.head(5))
+
+full_data_str = full_data.applymap(str)
+# print(full_data.head(5))
 
 #SCORES
 criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', 'Need for Mobile Health Resources']
 
 #FOR SIDE CHART
-indicators_lst = ['Severe COVID Case Complications',
-'covid_cases',
-'Years of Potential Life Lost Rate',
-'% Fair or Poor Health',
+indicators_lst = [
+'Severe COVID Case Complications',
+ 'covid_cases',
+ 'Hypertension Death Rate',
 '% Smokers',
 '% Adults with Obesity',
-'% Adults with Diabetes',
-'% 65 and over',
+'% Diagnosed Diabetes',
+'% Adults 65 and Older',
+'Heart Disease Death Rate',
+'Risk of Severe Economic Harm',
 '% Uninsured',
 '% Children in Poverty',
 'Income Ratio',
 '% Single-Parent Households',
-'% Fair or Poor Health',
+'% Severe Housing Cost Burden',
 '% Severe Housing Problems',
 '% Enrolled in Free or Reduced Lunch',
 '% Unemployed',
 'High School Graduation Rate',
-'Primary Care Physicians Rate',
-'% Home Internet Access',
-'Risk of Severe Economic Harm', 
 'Need for Mobile Health Resources',
+'% Rural',
+'% households wo car',
+'% workers commuting by public transit',
+'Primary Care Physicians Rate',
+'% Without Health Insurance',
+'% Nonwhite',
+'% Limited English Proficiency',
+'% Veterans in Civilian Adult Population',
+'% disabled',
+'opioid death rate',
+'% Fair or Poor Health',
+'Number of Hospitals'
 ]
 
 index_range = {}
 for indicator in indicators_lst:
-    if indicator == 'Income Ratio' or indicator == '% 65 and over' or indicator == '% Unemployed':
-        index_range[indicator] = sigma_calculation.calculate_range(full_data, indicator, 1)
+    if indicator == 'Income Ratio' or indicator == '% Adults 65 and Older' or indicator == '% Unemployed':
+        index_range[indicator] = sigma_calculation.calculate_range(full_data, indicator, 2)
     else:
-        index_range[indicator] = sigma_calculation.calculate_range(full_data, indicator)
+        index_range[indicator] = sigma_calculation.calculate_range(full_data, indicator,2)
+
+# #FOR HOVERBOARD
+# data_lst = ['County', 'State'] + indicators_lst
+# full_data['all_data'] =  full_data['FIPS'] 
+# # + "<br>" + "County: " + full_data['County'] + "<br>" + "State: " + full_data['State'] 
+# for indicator in data_lst:
+#     # if full_data_str[indicator] != "nan":
+#     full_data['all_data'] = full_data['all_data'] + "<br>" + indicator +": " + full_data_str[indicator]
+# # print(full_data['a'])
+
 
 #FOR HOVERBOARD
 data_lst = ['County', 'State'] + indicators_lst
 full_data['all_data'] =  full_data['FIPS'] + "<br>" + "County= " + full_data['County'] + "<br>" + "State= " + full_data['State'] 
 for indicator in indicators_lst:
     full_data['all_data'] = full_data['all_data'] + "<br>" + indicator +"= " + full_data_str[indicator]
+    
 
+# print(full_data['all_data'].iloc[3127] )
 
 app = dash.Dash(__name__, external_stylesheets= external_stylesheets, 
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 
 server = app.server
 
-cache = Cache(server, config={
-    'CACHE_TYPE': 'filesystem',
-    'CACHE_DIR': 'cache-directory'
-})
+# cache = Cache(server, config={
+#     'CACHE_TYPE': 'filesystem',
+#     'CACHE_DIR': 'cache-directory'
+# })
 
-TIMEOUT = 60
-@cache.memoize(timeout=TIMEOUT)
+# TIMEOUT = 60
+# @cache.memoize(timeout=TIMEOUT)
 
-def give_locations():
-    import json
-    with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-        counties = json.load(response)
-    return counties
+# def give_locations():
+#     import json
+#     with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+#         counties = json.load(response)
+#     return counties
 
 #LAYOUT
 horizontal_charts = html.Div(children= [covid_bar_chart.bar_chart, side_chart.side_chart], style={'display': 'flex', 'maxHeight':'30%'})
@@ -187,6 +228,13 @@ def define_data(state, counties):
                 dff2 = pd.concat([dff2, cty_df], join='outer')
             return dff2
 
+def break_line(indicators):
+    full = ""
+    for indicator in indicators:
+        full += "<br>" + indicator +"= " + full_data_str[indicator]
+    return full
+
+
 @app.callback(
     [Output('indicators-shown', 'children'), 
     Output('chosen-indicators', 'data')],
@@ -215,29 +263,31 @@ def update_map(state, chosen_counties, chosen_indicator):
     if len(chosen_indicator) != 0:
     #    already_shown.append(chosen_indicator[0])
         fig = px.choropleth_mapbox(chosen_data, 
-            geojson=give_locations(), locations=chosen_data['FIPS'], 
+            geojson=counties, locations=chosen_data['FIPS'], 
             color=chosen_indicator[0],
             color_continuous_scale=multimap_plotly.colors_map[chosen_indicator[0]],
             range_color=index_range[chosen_indicator[0]],
             mapbox_style="carto-positron",              
             zoom=3.5, center = {"lat": 37.0902, "lon": -95.7129},
             opacity=0.8,
-            labels={chosen_indicator[0]}, hover_data= ['County', 'State'] + indicators_lst,
+            labels={chosen_indicator[0]}, hover_data= ["FIPS","State", "County"] + chosen_indicator,
             )
         fig.update_layout(coloraxis_showscale=False, title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
         if len(chosen_indicator) > 1:
             for val_indx in range(1, len(chosen_indicator)):
         #        if chosen_indicator[val_indx] not in already_shown:
        #             already_shown.append(chosen_indicator[val_indx])
-                fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=give_locations(), locations=chosen_data['FIPS'], z=chosen_data[chosen_indicator[val_indx]],
+                fig.add_trace(go.Choroplethmapbox(name = chosen_indicator[val_indx], geojson=counties, locations=chosen_data['FIPS'], z=chosen_data[chosen_indicator[val_indx]],
                             colorscale=multimap_plotly.colors_map[chosen_indicator[val_indx]],
                             zmin=index_range[chosen_indicator[val_indx]][0],
                             zmax=index_range[chosen_indicator[val_indx]][1],
                             marker_line_width=0.1, marker_opacity=0.8, showscale=False, 
-                            text= chosen_data['all_data'], hovertemplate = 'FIPS= %{text} <extra></extra>'))
+                            text= break_line(["FIPS", "State", "County"] + chosen_indicator)
+                            # '<br> {} = {} <br>'.format(indicator, chosen_data[indicator]) for indicator in ["FIPS", "County", "State"] + chosen_indicator
+                            , hovertemplate = '%{text} <extra></extra>'))
                 fig.update_layout(title_text = chosen_indicator[0], margin={"r":0,"t":0,"l":0,"b":0})
     else:
-        fig = go.Figure(go.Choroplethmapbox(geojson=give_locations(), locations=data.FIPS))
+        fig = go.Figure(go.Choroplethmapbox(geojson=counties, locations=data.FIPS))
         fig.update_layout(mapbox_style="carto-positron", mapbox_zoom=3.5, mapbox_center = {"lat": 37.0902, "lon": -95.7129}, showlegend=False, margin={"r":0,"t":0,"l":0,"b":0}, height=None)
     return fig
 
