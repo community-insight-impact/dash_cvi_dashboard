@@ -3,7 +3,7 @@
       /*position: fixed;  Stay in place */
     z-index: 1;
     top: 0;
-    left: 0;
+    left: 0px;
     bottom: 0;
     width: 25rem;
     text-align: left;
@@ -12,7 +12,15 @@
     padding: 2rem 1rem;
     background-color: #f8f9fa;
     height:100%;
+    /*z-index:100;*/
+    /*overflow-x:initial;*/
+    overflow-y: scroll;
   }
+
+#intro-container{
+  height:10px;
+  /*width:25rem;*/
+}
 
 
 #sidebar h2 {
@@ -26,9 +34,27 @@
   height: 130px;
 }
 
-#sidebar-toggle {
+#sidebar p{
+  font-size: 16px;
+  display:inline;
+  /*margin-bottom: 0px;*/
+  }
+
+#sidebar nobr{
+  font-size: 16px;
+  margin-bottom: 0px;
+  }
+
+#sidebar a{
+  font-size: 16px;
+  margin-top: 0px;}
+
+  /*display: none;*/
+
+
+/*#sidebar-toggle {
   display: none;
-}
+}*/
 
 #collapse *:first-child {
   margin-top: 1rem;
@@ -52,6 +78,14 @@
   font:bold 13px/100% Arial, sans-serif;
   transform-origin: 0 0;
   transform: rotate(270deg);
+  display: inline-block;
+  position: relative;
+  /*top: 25rem;*/
+    /*left: 28rem;*/
+  /*right: -28.75rem;*/
+  /*transition: margin 0.5s ease-in-out, padding 0.5s ease-in-out;*/
+  /*transition: top 0.5s ease-in-out;*/
+  z-index: 101;
 }
 
 #page-content {
@@ -62,34 +96,54 @@
 #sidebar-toggle {
     display: inline-block;
     position: relative;
-    top: 15rem;
-    right: -23rem;
-    transition: top 0.5s ease-in-out;
+    top: 25rem;
+    /*left: 28rem;*/
+    right: -25rem;
+    transition: margin 0.5s ease-in-out, padding 0.5s ease-in-out;
+    /*transition: top 0.5s ease-in-out;*/
+   /* z-index: 101;*/
   }
 
   /* add negative margin to sidebar to achieve the collapse */
 #sidebar.collapsed {
-    margin-left: -24.95rem;
-    /*padding-right: 0.8rem;*/
+    margin-left: -25rem;
+      /*padding-right: 0.8rem;*/
+    /*transition: margin 0.5s ease-in-out, padding 0.5s ease-in-out;*/*/
   }
 
   /* position the 'introduction' pull out tab */
-#sidebar.collapsed #sidebar-toggle {
+/*#sidebar.collapsed #sidebar-toggle {
     top: 15rem;
-    right: -23rem;
-  }
+    left:0;
+    margin-left: -29rem;
+    /*right:-25rem;*/
+    /*left: 25rem;*/
+/*  }*/
+
+#sidebar-toggle.collapsed{
+  margin-left: -25rem;
+  /*transition: margin 0.5s ease-in-out, padding 0.5s ease-in-out;*/*/
+  /*transition: margin 0.5s ease-in-out, padding 0.5s ease-in-out;*/
+
+}
 
 #sidebar-para hr{
   margin-top: 2px;
   margin-bottom: 15px;
+  /*width: 100%;
+  /*overflow-y: scroll;*/
+  /*height: 3100px;*/
 }
 
 #sidebar #blurb{
-  height:100%;
+  height:1100px;
+  width:100%;
+  /*overflow-y: scroll;*/
   }
 
 #sidebar #lead{
   height: 100%;
+  width: 100%;
 }
 
 #sidebar #title-sidebar{
@@ -97,3 +151,18 @@
   font-size: 25;
   width: 100%;
 }
+
+.underline{
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.spacebtwn{
+  display: initial;
+  margin-bottom: 5px;
+}
+#sidebar .bold{
+  font-weight:bold;
+}
+
+

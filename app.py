@@ -72,37 +72,39 @@ criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', '
 
 #FOR SIDE CHART
 indicators_lst = [
-'Severe COVID Case Complications',
+'Severe COVID Case Complications', #0
  'covid_cases',
  'Hypertension Death Rate',
 '% Smokers',
 '% Adults with Obesity',
-'% Diagnosed Diabetes',
+'% Diagnosed Diabetes', #5
+'% disabled',
 '% Adults 65 and Older',
-'Heart Disease Death Rate',
-'Risk of Severe Economic Harm',
 '% Uninsured',
-'% Children in Poverty',
-'Income Ratio',
+'% Children in Poverty', 
+'Income Ratio', #10
 '% Single-Parent Households',
-'% Severe Housing Cost Burden',
+'% Fair or Poor Health',
 '% Severe Housing Problems',
 '% Enrolled in Free or Reduced Lunch',
-'% Unemployed',
+'% Unemployed', #15
 'High School Graduation Rate',
-'Need for Mobile Health Resources',
+'Primary Care Physicians Rate',
+'Heart Disease Death Rate',
+'Risk of Severe Economic Harm', #19 
+'Need for Mobile Health Resources', #20
+'% Severe Housing Cost Burden',
 '% Rural',
 '% households wo car',
 '% workers commuting by public transit',
-'Primary Care Physicians Rate',
-'% Without Health Insurance',
+'% Without Health Insurance', #25
 '% Nonwhite',
 '% Limited English Proficiency',
 '% Veterans in Civilian Adult Population',
-'% disabled',
-'opioid death rate',
 '% Fair or Poor Health',
+'opioid death rate', #30
 'Number of Hospitals'
+
 ]
 
 index_range = {}
@@ -231,7 +233,7 @@ def define_data(state, counties):
 def break_line(indicators):
     full = ""
     for indicator in indicators:
-        full += "<br>" + indicator +"= " + full_data_str[indicator]
+        full += "<br>" + indicator +" = " + full_data_str[indicator]
     return full
 
 
@@ -487,13 +489,24 @@ def change_icon(n0, is_open0):
 
 
 @app.callback(
-    Output("sidebar", "className"),
+    [Output("sidebar", "className"),
+    Output("sidebar-toggle", "className")],
     [Input("sidebar-toggle", "n_clicks")],
     [State("sidebar", "className")])
 def toggle_classname(n, classname):
     if n and classname == "":
-        return "collapsed"
-    return ""
+        return "collapsed", "collapsed"
+    return "", ""
+
+# @app.callback(
+#     Output("sidebar", "is_open"),
+#     [Input("sidebar-toggle", "n_clicks")],
+#     [State("sidebar", "is_open")],
+# )
+# def toggle_collapse(n, is_open):
+#     if n:
+#         return not is_open
+#     return is_open
 
 
 if __name__ == '__main__':

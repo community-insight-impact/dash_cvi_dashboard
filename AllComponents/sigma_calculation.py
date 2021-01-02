@@ -1,7 +1,7 @@
 import statistics
 import pandas as pd
 
-data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
+# data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
 
 
 

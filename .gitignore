@@ -7,3 +7,5 @@ AllComponents/multimap_for_debugging.py
 AllComponents/possible_new_map
 AllComponents/possible_new_map.py
 cache-directory
+AllComponents/intro_sidebar_new.py
+AllComponents/__pycache__

@@ -13,7 +13,7 @@ colors_map = {'Severe COVID Case Complications': ['#fdc1f6', '#ff385e'], 'covid_
 '% Adults 65 and Older':['#bdb4fe', '#0d0c54'],
 'Heart Disease Death Rate': ['#bdb4fe', '#0d0c54'],
 
-'Risk of Severe Economic Harm':['#40fcc7', '#17b28f'],
+'Risk of Severe Economic Harm':['#40fcc7', '#0c3f47'],
 '% Uninsured': ['#bdb4fe', '#0d0c54'],
 '% Children in Poverty': ['#bdb4fe', '#0d0c54'],
 'Income Ratio':['#bdb4fe', '#0d0c54'],
@@ -24,7 +24,7 @@ colors_map = {'Severe COVID Case Complications': ['#fdc1f6', '#ff385e'], 'covid_
 '% Unemployed':['#bdb4fe', '#0d0c54'],
 'High School Graduation Rate':['#bdb4fe', '#0d0c54'],
 
-'Need for Mobile Health Resources':['#ffc05f', '#ee7538'],
+'Need for Mobile Health Resources':['#ffc05f', '#d81405'],
 '% Rural': ['#bdb4fe', '#0d0c54'],
 '% households wo car':['#bdb4fe', '#0d0c54'],
 '% workers commuting by public transit': ['#bdb4fe', '#0d0c54'],
@@ -43,7 +43,7 @@ colors_map = {'Severe COVID Case Complications': ['#fdc1f6', '#ff385e'], 'covid_
 map_plus_sidebox = html.Div(id = 'map-legends', children=
     [html.Div(id = "inner-map", children = dcc.Loading(id= 'loading-1',children= [html.Div(dcc.Graph(id='counties-map', #figure= empty_fig
         ))], type='default'),
-        style= {'width': "79%", 'height':'100%', 'display':'inline-block', 'marginLeft': '5px', 'marginTop': '5px'}),
+        style= {'width': "79%", 'height':'100%', 'display':'inline-block', 'marginLeft': '5px'}),
 
     html.Div(children=[menu.accordion_box, menu.indicators_shown], style = {'width': '20%'})],
             style= {'width':'100%', 'height':'50%', 'display':'flex', 'zIndex': -2})

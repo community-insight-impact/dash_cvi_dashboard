@@ -3,7 +3,7 @@
 	z-index: 1;
 	/*top: 5px;*/
 	margin-top: 15px;
-	right: 92.25%;
+	margin-left:10px;
 	float: right;
 	width: 100px;
 	height: 350px;
@@ -12,10 +12,10 @@
 }
 
 #point-down{
-	position:relative;
+	position:fixed;
 	/*float:right;*/
 	z-index: 1000000000;
-	bottom:50px;
+	top:400px;
 	/*top:100px;*/
 	/*right:300px;*/
 	left:80px;
@@ -28,10 +28,7 @@
 	/*height:50%;*/
 }
 
-/*#colors{
-	margin-left:5px;
-	margin-top: 10px;
-}*/
+
 
 #legs{
 	/*margin-top: 10px*/

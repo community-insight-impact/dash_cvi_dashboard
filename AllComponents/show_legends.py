@@ -5,11 +5,11 @@ import base64
 
 
 def make_legend(index):
-	image_filename = "colorscales/" + str(index) + ".png" #image of the color scale
-	encoded_image = base64.b64encode(open(image_filename, 'rb').read())
-	return html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()))
+	image_filename = "/assets/colorscales/" + str(index) + ".png" #image of the color scale
+	# encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+	return html.Img(src='{}'.format(image_filename))
 
-color_scale = html.Div(children= [html.Div(className= 'legend',children=[html.P(id = "legs", children = "Legends:"),
+color_scale = html.Div(className= 'legend',children=[html.P(id = "legs", children = "Legends:"),
 	html.Div([html.Div(id ='color-scales', children = []), 
-	html.I(id='point-down', className="fa fa-angle-down", **{'aria-hidden': 'true'})])])])
+	html.I(id='point-down', className="fa fa-angle-down", **{'aria-hidden': 'true'})])])
 
