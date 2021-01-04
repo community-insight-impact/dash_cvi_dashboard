@@ -34,7 +34,6 @@ data3 = pd.read_csv("data/mobile_health_score_data.csv", dtype={'FIPS': str})
 
 full_data = data.merge(data2, how='outer', left_on = ["FIPS", "State", "County"], right_on =["FIPS", "State", "County"] )
 full_data = full_data.merge(data3,how= 'outer', left_on = ["FIPS", "State", "County", "% Adults 65 and Older"], right_on = ["FIPS", "State", "County", "% Adults 65 and Older"])
-full_data.round(2)
 
 #Add county +state name
 all_counties = []
@@ -350,8 +349,6 @@ text_colors = ['#ff385e', '#0c3f47', '#ffc05f']
     Input('total-ctys', 'data')])
 
 def chart_display(cty_indx, score_i, state, total_cty):
-    #time.sleep(3)
-    # cty_indx = county_i
     score_indx = score_i[0]
     score = criteria[score_indx]
     if state == 'United States':
@@ -359,37 +356,33 @@ def chart_display(cty_indx, score_i, state, total_cty):
     else: 
         data = full_data[full_data['State'] == state]
     df = make_50_df(data, score_indx)
-    #çdf = full_datasets50[score]
     
     return [
         html.Div(html.H4(children=score, style={'textAlign':'center','fontSize':19, 'marginBottom':0, 'marginTop':0, 'position':'static', 'textOverflow':'ellipsis', 'overflow':'hidden', 'color': text_colors[score_indx]})),
         html.H4('County Score',style={'textAlign':'center', 'fontSize': 18, 'marginBottom': 0, 'position':'static'}),
         html.H4(str(round(df.iloc[cty_indx][score],2)), style= { 'fontWeight': 'bold', 'textAlign':'center', 'marginBottom': 0}),
         html.H5(children= str(df.iloc[cty_indx]['County'] + ", " + df.iloc[cty_indx]['State']), 
-        style = {'textAlign':'center', 'fontSize': 19, 'position':'static'})#'margin-bottom': 50,
-        ], score, {'textAlign':'center', 'display':'inline-block', 'font-size': '12px', 'textOverflow':'ellipsis', 'color': text_colors[score_indx]}, '{} of {}'.format(cty_indx + 1, total_cty)
+        style = {'textAlign':'center', 'fontSize': 19, 'position':'static'})
+        ], score, {'textAlign':'center', 'display':'inline-block', 'font-size': '13px', 'textOverflow':'ellipsis', 'color': text_colors[score_indx]}, '{} of {}'.format(cty_indx + 1, total_cty)
 
         
 @app.callback(
     [Output(f"collapse-{i}", "is_open")for i in range(3)],
-    #+[Output(f"score-{i}-toggle", "className") for i in range(3)], #+ [Output(f"checkbox-{i}", "className") for i in range(3)] + [Output(f"arrow-{i}", "className") for i in range(3)] ,
     [Input(f"score-{i}-toggle", "n_clicks") for i in range(3)],
     [State(f"collapse-{i}", "is_open") for i in range(3)])
 
 def toggle_accordion(n1, n2, n3, is_open1, is_open2, is_open3):
     ctx = dash.callback_context
     if not ctx.triggered:
-        return is_open1, is_open2, is_open3 #,caret_list[is_open1], caret_list[is_open2], caret_list[is_open3])  
+        return is_open1, is_open2, is_open3
     else:
         button_id = ctx.triggered[0]["prop_id"].split(".")[0]
         if button_id == "score-0-toggle" and n1:
-            #print(n1)
-            return not is_open1, is_open2, is_open3 #caret_list[not is_open1], caret_list[is_open2], caret_list[is_open3])
+            return not is_open1, is_open2, is_open3 
         elif button_id == "score-1-toggle" and n2:
-            return is_open1, not is_open2, is_open3 #caret_list[is_open1], caret_list[not is_open2], caret_list[is_open3])
+            return is_open1, not is_open2, is_open3 
         elif button_id == "score-2-toggle" and n3:
-            return is_open1, is_open2, not is_open3#, caret_list[is_open1], caret_list[is_open2], caret_list[ not is_open3])
-        #return (is_open1, is_open2, is_open3)
+            return is_open1, is_open2, not is_open3
 
 @app.callback(
     #list([Output(f"checkbox-{i}", "className")for i in range(3)] + 

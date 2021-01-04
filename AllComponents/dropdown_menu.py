@@ -43,7 +43,8 @@ item2 = html.Div([
     html.P('Includes:'),
     dcc.Checklist(id="mobile-indicators", options=[
         {'label': '% Rural', 'value': '% Rural'},
-        {'label': '% 65 and over', 'value': '% 65 and over'},
+        {'label': '% 65 and over', 'value': '% Adults 65 and Older'},
+        {'label': '% Workers commuting by public transit', 'value': '% workers commuting by public transit'},
         {'label': '% Households without a Car', 'value': '% households wo car'},
         {'label': '% Without Health Insurance', 'value': '% Without Health Insurance'},
         {'label': 'Primary Care Physicians Rate', 'value': 'Primary Care Physicians Rate'},
@@ -53,7 +54,7 @@ item2 = html.Div([
         {'label': '% Veterans in Civilian Adult Population', 'value': '% Veterans in Civilian Adult Population'},
         {'label': '% disabled', 'value': '% disabled'},
         {'label': 'opioid death rate', 'value': 'opioid death rate'},
-        {'label': 'Number of Hospitals', 'value': 'Number of Hospitals'}
+        {'label': 'Number of Hospitals', 'value': 'Number of Hospitals'},
         ], value=[], inputClassName= "fa fa-square-o")
     ])
 
