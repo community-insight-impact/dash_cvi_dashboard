@@ -9,3 +9,7 @@ AllComponents/possible_new_map.py
 cache-directory
 AllComponents/intro_sidebar_new.py
 AllComponents/__pycache__
+worker.py
+utils.py
+.bash_profile
+.bash_profile.save

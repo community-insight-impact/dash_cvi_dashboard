@@ -9,7 +9,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import flask
-#import os
+# import os
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 from AllComponents import sigma_calculation
@@ -27,30 +27,17 @@ with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-c
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-# @cache.memoize(timeout=TIMEOUT)
-# def give_df():
     #MERGE ALL DATA INTO 1 DF
 data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
 data_str = data.applymap(str)
 data2 = pd.read_csv("data/economic_score_data.csv", dtype={'FIPS': str})
 # print(data2)
 data3 = pd.read_csv("data/mobile_health_score_data.csv", dtype={'FIPS': str})
-#    return data.merge(data2, how='outer').merge(data3, how='outer')
 
-#data = pd.read_csv("data/severe_cases_score_data.csv", dtype={'FIPS': str})
 
-#FULL DATAFRAME
-    #'outer'
 full_data = data.merge(data2, how='outer', left_on = ["FIPS", "State", "County"], right_on =["FIPS", "State", "County"] )
 full_data = full_data.merge(data3,how= 'outer', left_on = ["FIPS", "State", "County", "% Adults 65 and Older"], right_on = ["FIPS", "State", "County", "% Adults 65 and Older"])
 full_data.round(2)
-# data.merge(data2, how=
-#     'left', on = 'County').merge(data3, how=
-#     'left', on = 'County')
-# print(full_data[full_data['State'] == "Texas"])
-
-# full_data = pd.concat([data, data2, data3]).drop_duplicates()
-#print(full_data_str.iloc[185])
 
 #Add county +state name
 all_counties = []
@@ -61,11 +48,9 @@ for each_i in range(big_i):
         all_counties.append(cty)
     else:
         all_counties.append('nan, nan')
-#print(all_counties)
 full_data['County + State'] = all_counties
 
 full_data_str = full_data.applymap(str)
-# print(full_data.head(5))
 
 #SCORES
 criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', 'Need for Mobile Health Resources']
@@ -114,43 +99,17 @@ for indicator in indicators_lst:
     else:
         index_range[indicator] = sigma_calculation.calculate_range(full_data, indicator,2)
 
-# #FOR HOVERBOARD
-# data_lst = ['County', 'State'] + indicators_lst
-# full_data['all_data'] =  full_data['FIPS'] 
-# # + "<br>" + "County: " + full_data['County'] + "<br>" + "State: " + full_data['State'] 
-# for indicator in data_lst:
-#     # if full_data_str[indicator] != "nan":
-#     full_data['all_data'] = full_data['all_data'] + "<br>" + indicator +": " + full_data_str[indicator]
-# # print(full_data['a'])
-
-
 #FOR HOVERBOARD
 data_lst = ['County', 'State'] + indicators_lst
 full_data['all_data'] =  full_data['FIPS'] + "<br>" + "County= " + full_data['County'] + "<br>" + "State= " + full_data['State'] 
 for indicator in indicators_lst:
     full_data['all_data'] = full_data['all_data'] + "<br>" + indicator +"= " + full_data_str[indicator]
-    
 
-# print(full_data['all_data'].iloc[3127] )
 
 app = dash.Dash(__name__, external_stylesheets= external_stylesheets, 
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 
 server = app.server
-
-# cache = Cache(server, config={
-#     'CACHE_TYPE': 'filesystem',
-#     'CACHE_DIR': 'cache-directory'
-# })
-
-# TIMEOUT = 60
-# @cache.memoize(timeout=TIMEOUT)
-
-# def give_locations():
-#     import json
-#     with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
-#         counties = json.load(response)
-#     return counties
 
 #LAYOUT
 horizontal_charts = html.Div(children= [covid_bar_chart.bar_chart, side_chart.side_chart], style={'display': 'flex', 'maxHeight':'30%'})
@@ -498,18 +457,8 @@ def toggle_classname(n, classname):
         return "collapsed", "collapsed"
     return "", ""
 
-# @app.callback(
-#     Output("sidebar", "is_open"),
-#     [Input("sidebar-toggle", "n_clicks")],
-#     [State("sidebar", "is_open")],
-# )
-# def toggle_collapse(n, is_open):
-#     if n:
-#         return not is_open
-#     return is_open
-
-
 if __name__ == '__main__':
     app.run_server(host='127.0.0.1', port=8080, debug=True)
+
 
 

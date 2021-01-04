@@ -38,10 +38,8 @@ sidebar = html.Div(
                     html.A(href= "mailto: covid.vulnerability@gmail.com", children = "covid.vulnerability@gmail.com",  target="_blank", rel="noopener noreferrer"),
                     html.P(" to our team with any questions or ideas!\n"
                 )], className="lead",
-                    # style={'width': '100%', 'overflowY': 'scroll', 'height': '1200px'}
                     )],
             id="blurb", #temporary name
-        # style={'width': '100%', 'overflowY': 'scroll'}
     )],
     id="sidebar"
 )
