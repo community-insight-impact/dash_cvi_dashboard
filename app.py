@@ -9,19 +9,16 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import flask
-# import os
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 from AllComponents import sigma_calculation
 from AllComponents import choose_filters
 from AllComponents import covid_bar_chart
 from AllComponents import intro_sidebar
-from AllComponents import last_updated
 from AllComponents import multimap_plotly
 from AllComponents import nav_bar 
 from AllComponents import side_chart 
 from AllComponents import show_legends
-from flask_caching import Cache
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
     counties = json.load(response)
 
@@ -459,6 +456,3 @@ def toggle_classname(n, classname):
 
 if __name__ == '__main__':
     app.run_server(host='127.0.0.1', port=8080, debug=True)
-
-
-
