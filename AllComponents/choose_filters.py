@@ -35,7 +35,8 @@ choose_filters = html.Div([
             dcc.Dropdown(
                 id = 'choose-state',
                 options= [{'label': state, 'value': state} for state in all_states],
-                value= 'United States'
+                value= 'United States',
+                clearable = False
         )
     ],
     style={'width': '50%', 'display': 'inline-block'}),

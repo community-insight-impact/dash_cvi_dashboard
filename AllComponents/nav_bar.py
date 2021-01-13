@@ -5,7 +5,7 @@ nav_bar = html.Div(
     [
     html.Div(className='navbar', 
         children=[
-            html.Img(src='https://raw.githubusercontent.com/community-insight-impact/covid_community_vulnerability/master/CVI%20Logo%20FINAL%20ONE%20smaller.png',
+            html.Img(src='https://raw.githubusercontent.com/community-insight-impact/covid_community_vulnerability/master/CVI%20Logo.png',
         style={'height':'28px','margin':8}), 
             html.H2("COVID-19 Community Vulnerability Index  ", style={'font-size':18, 'vertical-align': 'middle', 'color': 'white'}),
             html.Div(className='dropdown', 

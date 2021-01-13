@@ -12,8 +12,6 @@
     padding: 2rem 1rem;
     background-color: #f8f9fa;
     height:100%;
-    /*z-index:100;*/
-    /*overflow-x:initial;*/
     overflow-y: scroll;
   }
 
@@ -157,10 +155,18 @@
   text-decoration: underline;
 }
 
+.underline:before{
+  content:'';
+  width: 100%;
+  height: 2px;
+  display: inline-block;
+}
+
 .spacebtwn{
-  display: initial;
+  /*display: initial;*/
   margin-bottom: 5px;
 }
+
 #sidebar .bold{
   font-weight:bold;
 }

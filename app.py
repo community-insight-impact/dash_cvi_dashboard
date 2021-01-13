@@ -150,7 +150,6 @@ def sort_top10(state):
                 'margin': {'t':0,'l':30, 'r':0, 'b':30 }
                 }
                 }
-
     
 @app.callback(
     Output('choose-county', 'options'),
