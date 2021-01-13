@@ -11,7 +11,7 @@ criteria = ['Severe COVID Case Complications', 'Risk of Severe Economic Harm', '
 item0 = html.Div([
     html.P('Describes likelihood that constituents within a community will develop severe complications following covid-19 infection', style = {'margin-bottom': 20}),
     html.P('Includes:'),
-    dcc.Checklist(id="severe-indicators", options=[ {'label': 'Number of COVID cases', 'value': 'covid_cases'},
+    dcc.Checklist(id="severe-indicators", options=[ {'label': ' Number of COVID cases', 'value': 'covid_cases'},
         {'label': ' % Adults 65 and Older', 'value': '% Adults 65 and Older'},
         {'label': ' % Adults with Obesity', 'value': '% Adults with Obesity'},
         {'label': ' % Diagnosed Diabetes', 'value': '% Diagnosed Diabetes'},
