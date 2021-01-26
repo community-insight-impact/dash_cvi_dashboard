@@ -30,9 +30,9 @@ sidebar = html.Div(
                     html.P(["View Detailed Data for A County\n",html.Br()] , className = "underline"),
                     html.P(["Click on a county on the map to view COVID-19 and population census data.\n",html.Br()]),
                     html.P(["In the lower right hand corner, view the top 50 county vulnerability scores and rankings in a specific state.\
-                    Use the arrows at the bottom of the module to toggle between the scores for different metrics.\
-                    Change the state with the \"Filter by State\" dropdown menu above the map.\n",html.Br()], className = "spacebtwn"),
-                    html.P("For more information ", className="bold"),
+                    Use the arrows at the bottom of the module to toggle between the scores for different metrics.", html.Br()], className = "gap"),
+                    html.P(["Change the state with the \"Filter by State\" dropdown menu above the map.\n",html.Br()], className = "gap"),
+                    html.P("For more information ", className="bold", id = "under-bold"),
                     html.P("about the project, click  the Menu icon in the top right corner. Feel free to reach out to "),
                     html.A(href= "mailto: covid.vulnerability@gmail.com", children = "covid.vulnerability@gmail.com",  target="_blank", rel="noopener noreferrer"),
                     html.P(" to our team with any questions or ideas!\n"

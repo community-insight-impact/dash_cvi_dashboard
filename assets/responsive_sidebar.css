@@ -126,6 +126,20 @@
   display: inline-block;
 }
 
+.gap:before{
+  content:'';
+  width: 100%;
+  height: 2px;
+  display: inline-block;
+}
+
+#under-bold:before{
+  content:'';
+  width: 100%;
+  height: 2px;
+  display: inline-block;
+}
+
 .spacebtwn{
   margin-bottom: 5px;
 }
