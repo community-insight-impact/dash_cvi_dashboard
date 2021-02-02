@@ -23,7 +23,7 @@ item0 = html.Div([
         )
 
 item1 = html.Div([
-    html.P('Describes existing need for food-based community efforts, services, and nonprofits', style={'margin-bottom': 20}),
+    html.P('Describes the likelihood that a community will experience severe economic hardship due to COVID-19 complications', style={'margin-bottom': 20}),
     html.P('Includes:'),
     dcc.Checklist(id="economic-indicators", options=[ 
         {'label': ' % Uninsured', 'value': '% Uninsured'},
